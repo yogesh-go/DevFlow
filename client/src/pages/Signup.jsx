@@ -1,11 +1,32 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 
 function Signup() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    console.log("Signup data:", formData);
+  };
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
       <section className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8">
-
         <div className="text-center">
           <h1 className="text-3xl font-bold">
             Create your account
@@ -16,8 +37,7 @@ function Signup() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-5">
-
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div>
             <label
               htmlFor="name"
@@ -28,7 +48,10 @@ function Signup() {
 
             <input
               id="name"
+              name="name"
               type="text"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Your name"
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-blue-500"
             />
@@ -44,7 +67,10 @@ function Signup() {
 
             <input
               id="email"
+              name="email"
               type="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="you@example.com"
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-blue-500"
             />
@@ -60,7 +86,10 @@ function Signup() {
 
             <input
               id="password"
+              name="password"
               type="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="••••••••"
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-blue-500"
             />
@@ -80,7 +109,6 @@ function Signup() {
             Login
           </Link>
         </p>
-
       </section>
     </main>
   );
