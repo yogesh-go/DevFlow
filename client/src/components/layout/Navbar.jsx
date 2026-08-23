@@ -1,42 +1,43 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
+
 import Button from "../ui/Button";
 import Container from "../ui/Container";
-
-const navItems = [
-  { name: "Home", path: "/" },
-  { name: "Features", path: "/features" },
-  { name: "Pricing", path: "/pricing" },
-];
-
-const navLinkClass = ({ isActive }) =>
-  `transition-colors ${
-    isActive
-      ? "text-blue-500"
-      : "text-slate-300 hover:text-white"
-  }`;
+import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Features", path: "/features" },
+    { name: "Pricing", path: "/pricing" },
+  ];
+
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-blue-500"
+      : "text-slate-300 hover:text-white";
+
   return (
     <header className="border-b border-slate-800 bg-slate-950">
       <Container>
-        <nav className="flex h-16 items-center justify-between">
-
+        <nav className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-blue-500">
+            <span className="text-blue-500 text-2xl font-bold">
               &lt;/&gt;
             </span>
 
-            <NavLink
+            <Link
               to="/"
-              className="text-2xl font-bold text-white transition-colors hover:text-blue-400"
+              className="text-2xl font-bold text-white hover:text-blue-400 transition-colors"
             >
               DevFlow
-            </NavLink>
+            </Link>
           </div>
 
-          {/* Navigation */}
-          <div className="flex items-center gap-8">
+          {/* Navigation Links */}
+          <div className="flex items-center gap-6">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -48,17 +49,38 @@ function Navbar() {
             ))}
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <Button variant="secondary">
-              Login
-            </Button>
+          {/* Authentication Actions */}
+          <div className="flex items-center gap-3">
+            {isAuthenticated ? (
+              <>
+                <span className="text-slate-300 text-sm">
+                  Hi, {user?.name}
+                </span>
 
-            <Button>
-              Get Started
-            </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+
+                <Link to="/signup">
+                  <Button size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
-
         </nav>
       </Container>
     </header>
