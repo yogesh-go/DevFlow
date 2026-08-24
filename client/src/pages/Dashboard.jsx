@@ -5,6 +5,8 @@ import TaskForm from "../components/tasks/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import TaskFilters from "../components/tasks/TaskFilters";
 import TaskSearch from "../components/tasks/TaskSearch";
+import TaskStats from "../components/tasks/TaskStats";
+import TaskProgress from "../components/tasks/TaskProgress";
 
 import api from "../services/api";
 import {
@@ -133,45 +135,8 @@ function Dashboard() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mt-10">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <p className="text-slate-400 text-sm">
-              Total Tasks
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-2">
-              {tasks.length}
-            </h2>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <p className="text-slate-400 text-sm">
-              Completed
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-2">
-              {
-                tasks.filter(
-                  (task) => task.status === "completed"
-                ).length
-              }
-            </h2>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <p className="text-slate-400 text-sm">
-              Pending
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-2">
-              {
-                tasks.filter(
-                  (task) => task.status !== "completed"
-                ).length
-              }
-            </h2>
-          </div>
-        </div>
+        <TaskStats tasks={tasks} />
+        <TaskProgress tasks={tasks} />
 
         <div className="grid lg:grid-cols-3 gap-8 mt-10">
           <div>

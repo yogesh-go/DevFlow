@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Dashboard from "../pages/Dashboard";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -20,7 +21,7 @@ function AppRoutes() {
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
-        {/* Dashboard will be added here */}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
 
       {/* 404 */}
