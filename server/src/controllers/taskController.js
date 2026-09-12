@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const { isValidObjectId } = require("../utils/validateObjectId");
 
 const createTask = async (req, res) => {
   try {
@@ -36,13 +37,47 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({
-      user: req.user.userId,
-    }).sort({ createdAt: -1 });
+    const page = Math.max(
+      parseInt(req.query.page) || 1,
+      1
+    );
+
+    const limit = Math.min(
+      Math.max(
+        parseInt(req.query.limit) || 10,
+        1
+      ),
+      50
+    );
+
+    const skip = (page - 1) * limit;
+
+    const [tasks, totalTasks] = await Promise.all([
+      Task.find({
+        user: req.user.userId,
+      })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Task.countDocuments({
+        user: req.user.userId,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(
+      totalTasks / limit
+    );
 
     res.status(200).json({
       success: true,
       tasks,
+      pagination: {
+        page,
+        limit,
+        totalTasks,
+        totalPages,
+      },
     });
   } catch (error) {
     console.error("Get tasks error:", error.message);
@@ -54,8 +89,15 @@ const getTasks = async (req, res) => {
   }
 };
 
-const updateTask = async (req, res) => {
+const updateTask = async (req, res, next) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID format",
+      });
+    }
+
     const { title, description, status, priority } = req.body;
 
     const task = await Task.findOne({
@@ -83,17 +125,19 @@ const updateTask = async (req, res) => {
       task,
     });
   } catch (error) {
-    console.error("Update task error:", error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(error);
   }
 };
 
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID format",
+      });
+    }
+
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
       user: req.user.userId,
@@ -111,12 +155,7 @@ const deleteTask = async (req, res) => {
       message: "Task deleted successfully",
     });
   } catch (error) {
-    console.error("Delete task error:", error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(error);
   }
 };
 

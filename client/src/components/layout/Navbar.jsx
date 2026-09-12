@@ -53,9 +53,11 @@ function Navbar() {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <>
-                <span className="text-slate-300 text-sm">
-                  Hi, {user?.name}
-                </span>
+                <Link to="/dashboard">
+                  <Button size="sm">
+                    Dashboard →
+                  </Button>
+                </Link>
 
                 <Button
                   variant="outline"
