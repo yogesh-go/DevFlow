@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import VerifyEmail from "../pages/VerifyEmail";
 import Features from "../pages/Features";
 import Pricing from "../pages/Pricing";
 import NotFound from "../pages/NotFound";
@@ -21,6 +22,7 @@ import AITools from "../pages/AITools";
 import Contests from "../pages/Contests";
 import GitHubAnalytics from "../pages/GitHubAnalytics";
 import Profile from "../pages/Profile";
+import Settings from "../pages/Settings";
 
 function AppRoutes() {
   return (
@@ -32,6 +34,7 @@ function AppRoutes() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
 
       {/* Authenticated Developer Workspace Routes */}
@@ -46,6 +49,7 @@ function AppRoutes() {
         <Route path="/contests" element={<Contests />} />
         <Route path="/github" element={<GitHubAnalytics />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
 
       {/* 404 Catch-All */}

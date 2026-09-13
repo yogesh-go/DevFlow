@@ -31,12 +31,20 @@ function Signup() {
     setLoading(true);
 
     try {
-      await api("/auth/signup", {
+      const data = await api("/auth/signup", {
         method: "POST",
         body: JSON.stringify(formData),
       });
 
-      navigate("/login");
+      if (data?.requiresVerification) {
+        navigate(
+          `/verify-email?email=${encodeURIComponent(formData.email)}${
+            data.previewCode ? `&preview=${encodeURIComponent(data.previewCode)}` : ""
+          }`
+        );
+      } else {
+        navigate("/login");
+      }
     } catch (err) {
       setError(err.message || "Failed to create account. Please try again.");
     } finally {

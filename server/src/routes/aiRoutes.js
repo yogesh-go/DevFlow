@@ -1,20 +1,18 @@
 const express = require("express");
 const protect = require("../middleware/authMiddleware");
 const {
-  explainCode,
-  optimizeCode,
-  generateNotes,
+  getAIStatus,
   analyzeResume,
   generateInterviewQuestions,
+  getProfileContext,
 } = require("../controllers/aiController");
 
 const router = express.Router();
 
 router.use(protect); // All AI endpoints are secured and require valid JWT authentication
 
-router.post("/explain", explainCode);
-router.post("/optimize", optimizeCode);
-router.post("/notes", generateNotes);
+router.get("/status", getAIStatus);
+router.get("/profile-context", getProfileContext);
 router.post("/resume", analyzeResume);
 router.post("/interview", generateInterviewQuestions);
 

@@ -31,9 +31,10 @@ const scheduleProblemRevisions = async (problemId, userId, baseDate = new Date()
 
   // Set the problem's nextRevisionDate to the first revision
   if (created.length > 0) {
-    await Problem.findByIdAndUpdate(problemId, {
-      nextRevisionDate: created[0].scheduledDate,
-    });
+    await Problem.findOneAndUpdate(
+      { _id: problemId, user: userId },
+      { nextRevisionDate: created[0].scheduledDate }
+    );
   }
 
   return created;
@@ -64,11 +65,14 @@ const completeRevision = async (revisionId, userId, { confidence = "medium", not
     status: "pending",
   }).sort({ scheduledDate: 1 });
 
-  await Problem.findByIdAndUpdate(revision.problem, {
-    lastRevisedDate: now,
-    $inc: { revisionCount: 1 },
-    nextRevisionDate: nextPending ? nextPending.scheduledDate : null,
-  });
+  await Problem.findOneAndUpdate(
+    { _id: revision.problem, user: userId },
+    {
+      lastRevisedDate: now,
+      $inc: { revisionCount: 1 },
+      nextRevisionDate: nextPending ? nextPending.scheduledDate : null,
+    }
+  );
 
   return revision;
 };

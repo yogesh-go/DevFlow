@@ -35,6 +35,12 @@ export function AuthProvider({ children }) {
     setToken(null);
   };
 
+  const updateUser = (userData) => {
+    const updated = { ...user, ...userData };
+    localStorage.setItem("user", JSON.stringify(updated));
+    setUser(updated);
+  };
+
   // Listen for unauthorized 401 events from api.js
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -80,6 +86,7 @@ export function AuthProvider({ children }) {
         token,
         login,
         logout,
+        updateUser,
         isAuthenticated: !!token,
         loading,
       }}

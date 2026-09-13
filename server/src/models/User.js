@@ -21,6 +21,51 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    verificationCode: {
+      type: String,
+      select: false,
+    },
+
+    verificationCodeExpires: {
+      type: Date,
+      select: false,
+    },
+
+    lastVerificationSentAt: {
+      type: Date,
+      select: false,
+    },
+
+    targetRole: {
+      type: String,
+      default: "Software Engineer",
+      trim: true,
+    },
+
+    skills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+
+    experienceLevel: {
+      type: String,
+      enum: ["Entry Level", "Intermediate", "Senior", "Lead / Staff"],
+      default: "Intermediate",
+    },
+
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+    },
   },
   {
     timestamps: true,

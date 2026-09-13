@@ -7,7 +7,6 @@ import {
   Repeat,
   Calendar,
   CheckCircle2,
-  Sparkles,
   Save,
   Trash2,
   AlertCircle,
@@ -20,7 +19,6 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import Button from "../components/ui/Button";
 import { getProblemById, updateProblem, deleteProblem } from "../services/problemService";
 import { getRevisions, scheduleRevision, completeRevision } from "../services/revisionService";
-import { explainCode, generateNotes } from "../services/aiService";
 
 function ProblemDetail() {
   const { id } = useParams();
@@ -36,9 +34,7 @@ function ProblemDetail() {
   const [timeTaken, setTimeTaken] = useState(0);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
 
-  // AI Assistant output state
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiOutput, setAiOutput] = useState(null);
+
 
   useEffect(() => {
     const fetchProblemAndRevisions = async () => {
@@ -148,37 +144,6 @@ function ProblemDetail() {
       navigate("/problems");
     } catch (err) {
       toast.error(err.message || "Failed to delete problem");
-    }
-  };
-
-  // AI Actions
-  const handleAiExplain = async () => {
-    try {
-      setAiLoading(true);
-      const codeSnippet = notes || `// ${problem.title} solution\nfunction solve() {\n  // Implementation\n}`;
-      const res = await explainCode("javascript", codeSnippet);
-      setAiOutput({ title: "Algorithmic Code Explanation", data: res.data });
-    } catch (err) {
-      toast.error(err.message || "AI request failed");
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
-  const handleAiGenerateNotes = async () => {
-    try {
-      setAiLoading(true);
-      const res = await generateNotes({
-        title: problem.title,
-        topic: problem.topic,
-        difficulty: problem.difficulty,
-        code: notes,
-      });
-      setAiOutput({ title: "Structured Solution Notes", data: res.data });
-    } catch (err) {
-      toast.error(err.message || "AI request failed");
-    } finally {
-      setAiLoading(false);
     }
   };
 
@@ -448,25 +413,6 @@ function ProblemDetail() {
                   <span>{isPreviewMode ? "Editor" : "Preview"}</span>
                 </button>
 
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={handleAiExplain}
-                  disabled={aiLoading}
-                >
-                  <Sparkles className="h-3 w-3 text-[#657858]" />
-                  <span>AI Explain</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={handleAiGenerateNotes}
-                  disabled={aiLoading}
-                >
-                  <Sparkles className="h-3 w-3 text-[#657858]" />
-                  <span>AI Notes</span>
-                </Button>
               </div>
             </div>
 
@@ -503,29 +449,6 @@ function ProblemDetail() {
             </div>
           </div>
 
-          {/* AI Result Box */}
-          {aiOutput && (
-            <div className="rounded-xl border border-[#C6D2BF] bg-[#EEF2EB] p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-[#C6D2BF] pb-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#4E5D44]">
-                  <Sparkles className="h-4 w-4 text-[#657858]" />
-                  <span>{aiOutput.title}</span>
-                </div>
-                <button
-                  onClick={() => setAiOutput(null)}
-                  className="text-xs font-medium text-[#4E5D44] hover:text-[#18181B]"
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className="text-xs text-[#18181B] leading-relaxed font-mono whitespace-pre-wrap bg-white p-3.5 rounded-lg border border-[#C6D2BF]">
-                {typeof aiOutput.data === "string"
-                  ? aiOutput.data
-                  : JSON.stringify(aiOutput.data, null, 2)}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

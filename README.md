@@ -199,11 +199,10 @@ devflow/
 | `PUT` | `/api/notes/:id` | Update note content or tags | Yes |
 | `DELETE`| `/api/notes/:id` | Delete note | Yes |
 | `GET` | `/api/analytics` | Real-time MongoDB aggregations (streaks, difficulty, topic coverage) | Yes |
-| `POST` | `/api/ai/explain` | AI code explanation & complexity | Yes |
-| `POST` | `/api/ai/optimize` | AI algorithmic code optimization | Yes |
-| `POST` | `/api/ai/notes` | AI structured revision note generator | Yes |
+| `GET` | `/api/ai/status` | AI provider health and configuration diagnostics | Yes |
+| `GET` | `/api/ai/profile-context` | Aggregated user profile context for AI simulation | Yes |
 | `POST` | `/api/ai/resume` | ATS resume keyword & SDE profile review | Yes |
-| `POST` | `/api/ai/interview`| Contextual SDE interview question generator | Yes |
+| `POST` | `/api/ai/interview`| Dynamic contextual SDE interview question generator | Yes |
 | `GET` | `/api/contests` | Live upcoming competitive programming contests | Yes |
 | `GET` | `/api/github/:username` | GitHub public profile, star metrics, and top languages | Yes |
 

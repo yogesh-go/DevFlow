@@ -1,307 +1,398 @@
 /**
- * Extensible AI Service Abstraction Layer
- * Supports switching between external LLM providers (OpenAI / Gemini / Anthropic)
- * and includes a reliable built-in heuristic analysis engine.
+ * Unified AI Service Orchestrator
+ * Integrates external providers (OpenAI, Gemini), prompt templates,
+ * in-memory caching, resilient retries, and high-quality deterministic heuristic fallbacks.
  */
 
-const callExternalLLM = async (prompt, systemPrompt = "You are an expert SDE coding mentor.") => {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+const { getAIConfig } = require("./ai/aiConfig");
+const {
+  buildResumePrompt,
+  buildInterviewPrompt,
+} = require("./ai/aiPrompts");
+const { executeAIRequest } = require("./ai/aiProvider");
+const aiCache = require("./ai/aiCache");
+const heuristicEngine = require("./ai/heuristicEngine");
 
-  if (process.env.OPENAI_API_KEY) {
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.3,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.choices?.[0]?.message?.content;
-      }
-    } catch (err) {
-      console.warn("External OpenAI call failed, falling back to heuristic engine:", err.message);
+/**
+ * Executes an AI operation with caching, provider routing, and guaranteed fallback
+ */
+const runAIOperation = async ({
+  feature,
+  payload,
+  promptBuilder,
+  heuristicFallback,
+  validator,
+  skipCache = false,
+  temperature,
+}) => {
+  // 1. Check in-memory cache (unless bypassed for dynamic generation)
+  if (!skipCache) {
+    const cached = aiCache.get(feature, payload);
+    if (cached) {
+      return {
+        ...cached,
+        _meta: { ...cached._meta, cached: true },
+      };
     }
   }
 
-  return null; // Fallback to local heuristic engine
-};
+  const config = getAIConfig();
+  const requestConfig = temperature !== undefined ? { ...config, temperature } : config;
 
-/**
- * 1. Explain Code
- */
-const explainCode = async ({ language = "javascript", code }) => {
-  const externalResult = await callExternalLLM(
-    `Explain this ${language} code, detail its time/space complexity, potential bugs, and suggestions:\n\n\`\`\`${language}\n${code}\n\`\`\``
-  );
+  // 2. Attempt external LLM if configured
+  if (config.hasExternalProvider) {
+    try {
+      const { system, prompt } = promptBuilder(payload);
+      const rawResult = await executeAIRequest({ system, prompt, config: requestConfig });
 
-  if (externalResult) {
-    return {
-      source: "ai-model",
-      explanation: externalResult,
-    };
+      if (rawResult && typeof rawResult === "object") {
+        const validated = validator ? validator(rawResult, payload) : rawResult;
+        if (validated) {
+          const result = {
+            ...validated,
+            _meta: {
+              provider: config.provider,
+              model: config.model,
+              cached: false,
+            },
+          };
+          if (!skipCache) {
+            aiCache.set(feature, payload, result);
+          }
+          return result;
+        }
+        console.warn(`[AI Service] External response failed schema validation for ${feature}, falling back to heuristic engine.`);
+      }
+    } catch (err) {
+      console.warn(
+        `[AI Service] External provider (${config.provider}) execution failed, falling back to heuristic engine:`,
+        err.message
+      );
+    }
   }
 
-  // Heuristic rule-based fallback analysis
-  const hasNestedLoops = /for\s*\(.*for\s*\(|while\s*\(.*while\s*\(/s.test(code);
-  const hasRecursion = /(function\s+(\w+)|const\s+(\w+)\s*=\s*.*=>).*\b\2\b|\b\3\b/s.test(code);
-  const usesMap = /new\s+(Map|Set)|HashMap|HashSet|\{\}/i.test(code);
-  const usesSorting = /\.sort|Arrays\.sort|std::sort|sort\(/i.test(code);
-
-  let timeComplexity = "O(N)";
-  let spaceComplexity = "O(1)";
-
-  if (hasNestedLoops) {
-    timeComplexity = "O(N²) due to nested iteration";
-  } else if (usesSorting) {
-    timeComplexity = "O(N log N) dominated by array sorting";
-  } else if (hasRecursion) {
-    timeComplexity = "O(2ⁿ) or O(N) depending on recursion tree pruning";
-    spaceComplexity = "O(N) recursion call stack depth";
-  }
-
-  if (usesMap) {
-    spaceComplexity = "O(N) auxiliary space for hash structure";
-  }
-
-  const potentialBugs = [];
-  if (!code.includes("null") && !code.includes("undefined") && !code.includes("empty") && !code.includes("length === 0")) {
-    potentialBugs.push("Missing edge-case check for null, undefined, or empty inputs.");
-  }
-  if (/(\[\s*\w+\s*\+\s*1\s*\]|\[\s*\w+\s*-\s*1\s*\])/.test(code)) {
-    potentialBugs.push("Possible boundary / off-by-one index out of bounds on array bounds access.");
-  }
-  if (potentialBugs.length === 0) {
-    potentialBugs.push("Ensure integer boundary overflows are checked for large constraint testcases.");
-  }
-
-  return {
-    source: "devflow-heuristic-engine",
-    language,
-    summary: `The code implements an algorithmic solution utilizing ${language} idioms with iterative/recursive processing.`,
-    timeComplexity,
-    spaceComplexity,
-    potentialBugs,
-    suggestions: [
-      "Consider early exit guards for base conditions to improve average-case execution time.",
-      "Ensure variable and pointer names clearly reflect loop invariants for better readability in technical interviews.",
-    ],
+  // 3. Deterministic / Dynamic Heuristic Fallback
+  const fallbackResult = heuristicFallback(payload);
+  const normalizedFallback = validator ? validator(fallbackResult, payload) : fallbackResult;
+  const result = {
+    ...normalizedFallback,
+    _meta: {
+      provider: "heuristic",
+      model: "heuristic-v1",
+      cached: false,
+    },
   };
+
+  if (!skipCache) {
+    aiCache.set(feature, payload, result);
+  }
+  return result;
 };
 
 /**
- * 2. Optimize Code
+ * Validates and normalizes Resume Analyzer AI response
  */
-const optimizeCode = async ({ language = "javascript", code }) => {
-  const externalResult = await callExternalLLM(
-    `Optimize this ${language} code for better time and space efficiency. Provide improved code and complexity comparison:\n\n\`\`\`${language}\n${code}\n\`\`\``
-  );
+const validateAndNormalizeResume = (data, payload = {}) => {
+  if (!data || typeof data !== "object") return null;
 
-  if (externalResult) {
-    return {
-      source: "ai-model",
-      optimizedResponse: externalResult,
-    };
-  }
-
-  return {
-    source: "devflow-heuristic-engine",
-    originalComplexity: "O(N²) brute-force or unoptimized traversal",
-    optimizedComplexity: "O(N) with Hash Map / Two Pointers pattern",
-    improvements: [
-      "Eliminated redundant inner loop iterations by indexing elements in a single-pass hash lookup.",
-      "Reduced auxiliary allocations by reusing existing arrays/structures in-place where applicable.",
-      "Added guard clauses for empty or single-element boundary inputs.",
-    ],
-    sampleOptimizedCode: `// Optimized implementation using Two Pointers / Map pattern\n// Time Complexity: O(N) | Space Complexity: O(N) or O(1)\n${code.trim()}`,
+  const clampScore = (num, fallback = 70) => {
+    const parsed = parseInt(num, 10);
+    return isNaN(parsed) ? fallback : Math.min(Math.max(parsed, 0), 100);
   };
-};
 
-/**
- * 3. Generate Structured Revision Notes
- */
-const generateNotes = async ({ title = "Problem", topic = "DSA", difficulty = "Medium", code = "" }) => {
-  const prompt = `Generate concise, structured revision notes for problem "${title}" (${topic}, ${difficulty}) with solution code:\n${code}`;
-  const externalResult = await callExternalLLM(prompt);
+  const overallScore = clampScore(data.overallScore, 75);
 
-  if (externalResult) {
-    return {
-      source: "ai-model",
-      notes: externalResult,
-    };
-  }
+  const summary =
+    typeof data.summary === "string" && data.summary.trim()
+      ? data.summary.trim()
+      : "Resume evaluation against targeted role requirements.";
 
-  return {
-    source: "devflow-heuristic-engine",
-    keyIdea: `Core pattern for ${title}: Recognize that this problem can be decomposed into the standard ${topic} technique. Maintain invariant conditions across pointers/state.`,
-    algorithmSteps: [
-      "Step 1: Validate input constraints and handle trivial base cases (e.g. length <= 1).",
-      "Step 2: Initialize state variables (pointers, hash map, or DP memoization table).",
-      "Step 3: Process the data structure in a single pass while updating the global optimum or answer.",
-      "Step 4: Return formatted result meeting problem boundary specifications.",
-    ],
-    commonMistakes: [
-      "Off-by-one errors when processing the final array element or loop boundary.",
-      "Forgetting to update pointer or auxiliary counter within conditional branches.",
-      "Not handling duplicate values or negative inputs.",
-    ],
-    interviewTips: [
-      "Always state the brute force complexity first before diving into the optimal approach.",
-      "Test your logic manually with an empty input and a single-element input before submitting.",
-    ],
+  const jobMatch = {
+    score: clampScore(data.jobMatch?.score, overallScore),
+    explanation:
+      typeof data.jobMatch?.explanation === "string" && data.jobMatch.explanation.trim()
+        ? data.jobMatch.explanation.trim()
+        : "Evaluation of core technical alignment and required domain skills.",
   };
-};
 
-/**
- * 4. Resume Analyzer
- */
-const analyzeResume = async ({ resumeText }) => {
-  if (!resumeText || resumeText.trim().length < 50) {
-    const err = new Error("Resume content must be at least 50 characters long.");
-    err.statusCode = 400;
-    throw err;
-  }
-
-  const externalResult = await callExternalLLM(
-    `Analyze this software engineering resume for SDE roles, provide ATS score, missing key skills, strengths, and recommendations:\n\n${resumeText}`
-  );
-
-  if (externalResult) {
-    return {
-      source: "ai-model",
-      analysis: externalResult,
-    };
-  }
-
-  const sdeKeywords = [
-    "data structures",
-    "algorithms",
-    "react",
-    "node",
-    "express",
-    "mongodb",
-    "sql",
-    "postgresql",
-    "docker",
-    "aws",
-    "ci/cd",
-    "git",
-    "typescript",
-    "python",
-    "system design",
-    "microservices",
-    "redis",
-    "rest api",
-    "testing",
-    "unit test",
-  ];
-
-  const lower = resumeText.toLowerCase();
-  const matchedKeywords = sdeKeywords.filter((k) => lower.includes(k));
-  const missingKeywords = sdeKeywords.filter((k) => !lower.includes(k)).slice(0, 6);
-
-  const atsScore = Math.min(Math.round((matchedKeywords.length / 15) * 100), 95);
-
-  return {
-    source: "devflow-heuristic-engine",
-    atsScore: Math.max(atsScore, 55),
-    strengths: [
-      "Clear technical skill listing matching modern web and backend stacks.",
-      "Hands-on project experience with full-stack implementation details.",
-      "Demonstrates familiarity with REST APIs, authentication, and database modeling.",
-    ],
-    missingKeywords,
-    improvements: [
-      "Quantify bullet points using metrics (e.g. 'reduced latency by 35%', 'handled 10k+ requests').",
-      "Highlight concurrency, unit testing, and CI/CD pipelines in personal project descriptions.",
-      "Include explicit links to live deployed applications and GitHub repositories.",
-    ],
+  const atsCompatibility = {
+    score: clampScore(data.atsCompatibility?.score, 70),
+    issues: Array.isArray(data.atsCompatibility?.issues)
+      ? data.atsCompatibility.issues.map(String)
+      : [],
+    recommendations: Array.isArray(data.atsCompatibility?.recommendations)
+      ? data.atsCompatibility.recommendations.map(String)
+      : ["Use standard section headings and incorporate metrics."],
   };
-};
 
-/**
- * 5. Interview Questions Generator
- */
-const generateInterviewQuestions = async ({ topic = "DSA", level = "Intermediate" }) => {
-  const prompt = `Generate 5 realistic technical interview questions with answers for a ${level} SDE candidate on ${topic}.`;
-  const externalResult = await callExternalLLM(prompt);
+  const skillsAnalysis = {
+    matched: Array.isArray(data.skillsAnalysis?.matched)
+      ? data.skillsAnalysis.matched.map(String)
+      : [],
+    missing: Array.isArray(data.skillsAnalysis?.missing)
+      ? data.skillsAnalysis.missing.map(String)
+      : [],
+    partiallyMatched: Array.isArray(data.skillsAnalysis?.partiallyMatched)
+      ? data.skillsAnalysis.partiallyMatched.map(String)
+      : [],
+  };
 
-  if (externalResult) {
-    return {
-      source: "ai-model",
-      questions: externalResult,
-    };
-  }
+  const experienceAnalysis = {
+    strengths: Array.isArray(data.experienceAnalysis?.strengths)
+      ? data.experienceAnalysis.strengths.map(String)
+      : ["Relevant software development project experience."],
+    gaps: Array.isArray(data.experienceAnalysis?.gaps)
+      ? data.experienceAnalysis.gaps.map(String)
+      : ["Quantitative evidence of scale or system impact."],
+  };
 
-  const questionsMap = {
-    DSA: [
-      {
-        question: "How do you detect a cycle in a Linked List, and what is the mathematical proof behind Floyd's Cycle Detection Algorithm?",
-        category: "Linked List & Pointers",
+  const keywordAnalysis = {
+    importantKeywords: Array.isArray(data.keywordAnalysis?.importantKeywords)
+      ? data.keywordAnalysis.importantKeywords.map(String)
+      : [],
+    missingKeywords: Array.isArray(data.keywordAnalysis?.missingKeywords)
+      ? data.keywordAnalysis.missingKeywords.map(String)
+      : [],
+    overusedKeywords: Array.isArray(data.keywordAnalysis?.overusedKeywords)
+      ? data.keywordAnalysis.overusedKeywords.map(String)
+      : [],
+  };
+
+  const resumeStrengths =
+    Array.isArray(data.resumeStrengths) && data.resumeStrengths.length > 0
+      ? data.resumeStrengths.map(String)
+      : Array.isArray(data.strengths) && data.strengths.length > 0
+      ? data.strengths.map(String)
+      : ["Clear technical project focus and software architecture fundamentals."];
+
+  const resumeWeaknesses =
+    Array.isArray(data.resumeWeaknesses) && data.resumeWeaknesses.length > 0
+      ? data.resumeWeaknesses.map(String)
+      : Array.isArray(data.weaknesses) && data.weaknesses.length > 0
+      ? data.weaknesses.map(String)
+      : ["Need stronger quantification of business and engineering metrics."];
+
+  const improvements =
+    Array.isArray(data.improvements) && data.improvements.length > 0
+      ? data.improvements.map((imp) => ({
+          priority: ["high", "medium", "low"].includes(String(imp.priority).toLowerCase())
+            ? String(imp.priority).toLowerCase()
+            : "medium",
+          section:
+            typeof imp.section === "string" && imp.section.trim()
+              ? imp.section.trim()
+              : "Experience",
+          problem:
+            typeof imp.problem === "string" && imp.problem.trim()
+              ? imp.problem.trim()
+              : "Needs additional detail and clarity.",
+          recommendation:
+            typeof imp.recommendation === "string" && imp.recommendation.trim()
+              ? imp.recommendation.trim()
+              : "Incorporate specific technical tools and outcomes.",
+          example:
+            typeof imp.example === "string" && imp.example.trim()
+              ? imp.example.trim()
+              : "Engineered scalable REST endpoint reducing response latency.",
+        }))
+      : [
+          {
+            priority: "high",
+            section: "Experience",
+            problem:
+              "Bullet points describe task responsibilities rather than measurable engineering impact.",
+            recommendation:
+              "Use the Google XYZ formula: 'Accomplished [X] as measured by [Y] by doing [Z]'.",
+            example: "Optimized database queries, reducing p99 API response time by 45%.",
+          },
+        ];
+
+  const projectRecommendations =
+    Array.isArray(data.projectRecommendations) && data.projectRecommendations.length > 0
+      ? data.projectRecommendations.map(String)
+      : ["Build a production-grade system demonstrating missing stack requirements."];
+
+  const actionPlan =
+    Array.isArray(data.actionPlan) && data.actionPlan.length > 0
+      ? data.actionPlan.map(String)
+      : Array.isArray(data.actionItems) && data.actionItems.length > 0
+      ? data.actionItems.map(String)
+      : [
+          "Tailor technical skills summary to emphasize required JD keywords.",
+          "Quantify project bullets with concrete performance metrics.",
+        ];
+
+  const rawInterviewQuestions = Array.isArray(data.interviewPreparation?.questions)
+    ? data.interviewPreparation.questions
+    : Array.isArray(data.questions)
+    ? data.questions
+    : [];
+
+  const interviewQuestions = rawInterviewQuestions.map((q, idx) => {
+    if (typeof q === "string") {
+      return {
+        question: q.trim(),
+        category: "Technical",
         difficulty: "Medium",
-        keyPoints: "Slow and fast pointers; distance reduces by 1 on each step; proof of meeting point.",
-      },
-      {
-        question: "Explain the difference between Dynamic Programming with Memoization (Top-Down) and Tabulation (Bottom-Up). What are the space implications?",
-        category: "Dynamic Programming",
-        difficulty: "Medium",
-        keyPoints: "Call stack overhead vs iterative array table; space optimization by keeping only the last K states.",
-      },
-      {
-        question: "When would you choose a Trie over a Hash Map for prefix-based string searching?",
-        category: "Trie & String Algorithms",
-        difficulty: "Hard",
-        keyPoints: "O(K) search where K is key length; prefix matching without storing duplicate prefixes; memory tradeoffs.",
-      },
-    ],
-    Backend: [
-      {
-        question: "How does JWT authentication work, and how do you handle token revocation or refresh without storing sessions in memory?",
-        category: "Authentication & Security",
-        difficulty: "Medium",
-        keyPoints: "Stateless verification with HMAC/RSA signature; short-lived access tokens + refresh tokens stored in secure HttpOnly cookies.",
-      },
-      {
-        question: "What is an IDOR vulnerability, and how do you systematically prevent it in a Node.js/Express REST API?",
-        category: "API Security",
-        difficulty: "Medium",
-        keyPoints: "Insecure Direct Object Reference; never query solely by :id; always include { _id: id, user: req.user.userId }.",
-      },
-    ],
-    SystemDesign: [
-      {
-        question: "How would you design a distributed rate limiter for a public API with 10,000 requests per second?",
-        category: "System Design",
-        difficulty: "Hard",
-        keyPoints: "Token Bucket or Sliding Window Log; Redis cluster with atomic Lua scripts; fallback strategies during network partitions.",
-      },
-    ],
-  };
+        reason: "Evaluates fundamental technical depth for this engineering role.",
+        hint: "Discuss trade-offs, scalability constraints, and clean design patterns.",
+      };
+    }
+    return {
+      question: typeof q.question === "string" && q.question.trim() ? q.question.trim() : `Interview Question ${idx + 1}`,
+      category: typeof q.category === "string" && q.category.trim() ? q.category.trim() : "Technical",
+      difficulty: ["Easy", "Medium", "Hard"].includes(q.difficulty) ? q.difficulty : "Medium",
+      reason: typeof q.reason === "string" && q.reason.trim() ? q.reason.trim() : "Evaluates technical depth for this engineering role.",
+      hint: typeof q.hint === "string" && q.hint.trim() ? q.hint.trim() : "Discuss trade-offs, scalability constraints, and clean design patterns.",
+    };
+  });
 
-  const selectedQuestions = questionsMap[topic] || questionsMap.DSA;
+  const interviewPreparation = {
+    likelyTopics:
+      Array.isArray(data.interviewPreparation?.likelyTopics) &&
+      data.interviewPreparation.likelyTopics.length > 0
+        ? data.interviewPreparation.likelyTopics.map(String)
+        : [
+            "System Design & REST Architecture",
+            "Database Query Optimization",
+            "State Management & Caching",
+          ],
+    likelyQuestions:
+      Array.isArray(data.interviewPreparation?.likelyQuestions) &&
+      data.interviewPreparation.likelyQuestions.length > 0
+        ? data.interviewPreparation.likelyQuestions.map(String)
+        : interviewQuestions.map((q) => q.question),
+    questions: interviewQuestions,
+  };
 
   return {
-    source: "devflow-heuristic-engine",
-    topic,
-    level,
-    questions: selectedQuestions,
+    overallScore,
+    summary,
+    jobMatch,
+    atsCompatibility,
+    skillsAnalysis,
+    experienceAnalysis,
+    keywordAnalysis,
+    resumeStrengths,
+    resumeWeaknesses,
+    improvements,
+    projectRecommendations,
+    actionPlan,
+    interviewPreparation,
+    // Backwards compatibility aliases
+    strengths: resumeStrengths,
+    weaknesses: resumeWeaknesses,
+    missingSkills: skillsAnalysis.missing,
+    atsIssues: atsCompatibility.issues,
+    actionItems: actionPlan,
   };
+};
+
+/**
+ * Validates and normalizes Interview Prep AI response
+ * Ensures 12-15 questions with { question, category, difficulty, reason, hint }
+ */
+const validateAndNormalizeInterview = (data) => {
+  if (!data || typeof data !== "object") return null;
+
+  const rawQuestions = Array.isArray(data.questions)
+    ? data.questions
+    : Array.isArray(data.interviewPreparation?.questions)
+    ? data.interviewPreparation.questions
+    : [];
+
+  const questions = rawQuestions.map((q, idx) => {
+    if (typeof q === "string") {
+      return {
+        question: q.trim(),
+        category: "Technical",
+        difficulty: "Medium",
+        reason: "Evaluates fundamental technical depth for this engineering role.",
+        hint: "Outline core principles, consider edge cases, and discuss practical trade-offs.",
+      };
+    }
+    return {
+      question: typeof q.question === "string" && q.question.trim() ? q.question.trim() : `Interview Question ${idx + 1}`,
+      category: typeof q.category === "string" && q.category.trim() ? q.category.trim() : "Technical",
+      difficulty: ["Easy", "Medium", "Hard"].includes(q.difficulty) ? q.difficulty : "Medium",
+      reason: typeof q.reason === "string" && q.reason.trim() ? q.reason.trim() : "Evaluates practical problem-solving ability and architectural trade-offs.",
+      hint: typeof q.hint === "string" && q.hint.trim() ? q.hint.trim() : "Focus on concrete implementations and production failure modes.",
+    };
+  });
+
+  const likelyTopics = Array.isArray(data.likelyTopics) && data.likelyTopics.length > 0
+    ? data.likelyTopics.map(String)
+    : Array.isArray(data.interviewPreparation?.likelyTopics)
+    ? data.interviewPreparation.likelyTopics.map(String)
+    : ["System Design", "Backend Architecture", "Core Fundamentals"];
+
+  const likelyQuestions = Array.isArray(data.likelyQuestions) && data.likelyQuestions.length > 0
+    ? data.likelyQuestions.map(String)
+    : questions.map((q) => q.question);
+
+  return {
+    questions,
+    likelyTopics,
+    likelyQuestions,
+  };
+};
+
+// 4. Analyze Resume
+const analyzeResume = async ({ resumeText, jobDescription }) => {
+  if (!resumeText || typeof resumeText !== "string" || !resumeText.trim()) {
+    throw new Error("Resume content is required.");
+  }
+  if (!jobDescription || typeof jobDescription !== "string" || !jobDescription.trim()) {
+    throw new Error("Job description is required.");
+  }
+
+  return runAIOperation({
+    feature: "resume",
+    payload: { resumeText, jobDescription },
+    promptBuilder: buildResumePrompt,
+    heuristicFallback: heuristicEngine.analyzeResume,
+    validator: validateAndNormalizeResume,
+  });
+};
+
+// 5. Generate Interview Questions
+const generateInterviewQuestions = async ({
+  resumeText = "",
+  jobDescription = "",
+  mode = "Mixed",
+  difficulty = "Mixed",
+  previousQuestions = [],
+  role = "Software Development Engineer",
+  skills = "",
+  topic = "Full Stack & System Architecture",
+  level = "Intermediate",
+  context = "",
+}) => {
+  const config = getAIConfig();
+  return runAIOperation({
+    feature: "interview",
+    payload: {
+      resumeText,
+      jobDescription,
+      mode,
+      difficulty,
+      previousQuestions,
+      role,
+      skills,
+      topic,
+      level,
+      context,
+    },
+    promptBuilder: buildInterviewPrompt,
+    heuristicFallback: heuristicEngine.analyzeInterviewQuestions,
+    validator: validateAndNormalizeInterview,
+    skipCache: true, // ZERO caching: every generation yields fresh question sets!
+    temperature: config.interviewTemperature,
+  });
 };
 
 module.exports = {
-  explainCode,
-  optimizeCode,
-  generateNotes,
   analyzeResume,
   generateInterviewQuestions,
+  getAIConfig,
 };

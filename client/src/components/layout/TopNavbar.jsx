@@ -1,4 +1,4 @@
-import { Menu, Plus, Sparkles } from "lucide-react";
+import { Menu, Plus, Sparkles, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../ui/Button";
@@ -12,10 +12,11 @@ const routeTitles = {
   "/ai-tools": "AI Developer Studio",
   "/contests": "Contest Calendar",
   "/github": "GitHub Analytics",
-  "/profile": "Developer Settings",
+  "/profile": "Developer Profile",
+  "/settings": "Workspace Settings",
 };
 
-function TopNavbar({ onMenuClick }) {
+function TopNavbar({ onMenuClick, isDesktopCollapsed, onToggleDesktopSidebar }) {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -28,12 +29,27 @@ function TopNavbar({ onMenuClick }) {
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-[#E6E3DB] bg-[#FAF9F5]/90 px-4 backdrop-blur-md md:px-8">
       <div className="flex items-center gap-3">
+        {/* Mobile Hamburger Button */}
         <button
           onClick={onMenuClick}
           className="rounded-md p-1.5 text-[#575653] hover:bg-[#F2F0E8] hover:text-[#18181B] lg:hidden transition-colors"
           aria-label="Open sidebar"
         >
           <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Desktop Sidebar Collapse Toggle */}
+        <button
+          onClick={onToggleDesktopSidebar}
+          className="hidden lg:inline-flex rounded-md p-1.5 text-[#8E8B82] hover:bg-[#F2F0E8] hover:text-[#18181B] transition-colors"
+          title={isDesktopCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+          aria-label="Toggle desktop sidebar"
+        >
+          {isDesktopCollapsed ? (
+            <PanelLeft className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
         </button>
 
         <div className="flex items-center gap-2">

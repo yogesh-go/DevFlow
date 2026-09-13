@@ -56,6 +56,18 @@ function Dashboard() {
     loadDashboardData();
   }, [loadDashboardData]);
 
+  // React to new problems created from anywhere in the workspace
+  useEffect(() => {
+    const handleProblemCreated = () => {
+      loadDashboardData();
+    };
+
+    window.addEventListener("devflow:problem-created", handleProblemCreated);
+    return () => {
+      window.removeEventListener("devflow:problem-created", handleProblemCreated);
+    };
+  }, [loadDashboardData]);
+
   const handleCompleteRevision = async (revId) => {
     try {
       await completeRevision(revId, { confidence: "high" });
@@ -80,8 +92,36 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="py-24 flex justify-center">
-        <LoadingSpinner message="Assembling your developer workspace..." />
+      <div className="space-y-8 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-[#E6E3DB] pb-6">
+          <div className="space-y-2">
+            <div className="h-3 w-36 rounded bg-[#EAE7DF]" />
+            <div className="h-8 w-64 rounded bg-[#EAE7DF]" />
+            <div className="h-4 w-80 rounded bg-[#EAE7DF]" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-8 w-24 rounded bg-[#EAE7DF]" />
+            <div className="h-8 w-24 rounded bg-[#EAE7DF]" />
+          </div>
+        </div>
+
+        {/* Metrics Strip Skeleton */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-2 border-b border-[#E6E3DB]/80 pb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-3 w-20 rounded bg-[#EAE7DF]" />
+              <div className="h-8 w-28 rounded bg-[#EAE7DF]" />
+              <div className="h-3 w-32 rounded bg-[#EAE7DF]" />
+            </div>
+          ))}
+        </div>
+
+        {/* Heatmap Skeleton */}
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-6 space-y-4">
+          <div className="h-4 w-48 rounded bg-[#EAE7DF]" />
+          <div className="h-28 rounded bg-[#FAF9F5]" />
+        </div>
       </div>
     );
   }
@@ -133,6 +173,8 @@ function Dashboard() {
               ? `Your consistency is improving. You have ${revisions.length} ${
                   revisions.length === 1 ? "revision" : "revisions"
                 } scheduled today.`
+              : overview.totalProblems === 0
+              ? "Welcome to DevFlow. Log your first problem to activate automated spaced repetition."
               : "Your consistency is improving. All scheduled revisions for today are complete."}
           </p>
         </div>
@@ -164,17 +206,19 @@ function Dashboard() {
         </div>
       )}
 
-      {/* 2. TYPOGRAPHIC METRICS STRIP */}
+      {/* 2. TYPOGRAPHIC METRICS STRIP (NO MISLEADING DEFAULTS) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-2 border-b border-[#E6E3DB]/80 pb-8">
         <div>
           <span className="text-[11px] font-medium uppercase tracking-wider text-[#8E8B82] block">
             Problems Solved
           </span>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#18181B] tracking-tight mt-1.5">
-            {overview.solvedProblems}
+            {overview.totalProblems === 0 ? "—" : overview.solvedProblems}
           </p>
           <p className="text-xs text-[#575653] mt-1">
-            {overview.totalProblems} tracked in workspace
+            {overview.totalProblems === 0
+              ? "No problems tracked yet"
+              : `${overview.totalProblems} tracked in workspace`}
           </p>
         </div>
 
@@ -183,11 +227,19 @@ function Dashboard() {
             Current Streak
           </span>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#865B20] tracking-tight mt-1.5 flex items-baseline gap-1.5">
-            <span>{overview.currentStreak}</span>
-            <span className="text-base font-normal text-[#8E8B82]">days</span>
+            {overview.currentStreak === 0 ? (
+              <span>—</span>
+            ) : (
+              <>
+                <span>{overview.currentStreak}</span>
+                <span className="text-base font-normal text-[#8E8B82]">days</span>
+              </>
+            )}
           </p>
           <p className="text-xs text-[#575653] mt-1">
-            Longest record: {overview.longestStreak || overview.currentStreak} days
+            {overview.currentStreak === 0
+              ? "Start solving to build your streak"
+              : `Longest record: ${overview.longestStreak || overview.currentStreak} days`}
           </p>
         </div>
 
@@ -196,11 +248,17 @@ function Dashboard() {
             This Week
           </span>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#18181B] tracking-tight mt-1.5 flex items-baseline gap-1.5">
-            <span>{weeklySolveCount}</span>
-            <span className="text-base font-normal text-[#8E8B82]">solves</span>
+            {weeklySolveCount === 0 ? (
+              <span>—</span>
+            ) : (
+              <>
+                <span>{weeklySolveCount}</span>
+                <span className="text-base font-normal text-[#8E8B82]">solves</span>
+              </>
+            )}
           </p>
           <p className="text-xs text-[#575653] mt-1">
-            Over past 7 days
+            {weeklySolveCount === 0 ? "No activity in past 7 days" : "Over past 7 days"}
           </p>
         </div>
 
@@ -209,11 +267,17 @@ function Dashboard() {
             Revisions Today
           </span>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#657858] tracking-tight mt-1.5 flex items-baseline gap-1.5">
-            <span>{revisions.length}</span>
-            <span className="text-base font-normal text-[#8E8B82]">due</span>
+            {revisions.length === 0 ? (
+              <span>—</span>
+            ) : (
+              <>
+                <span>{revisions.length}</span>
+                <span className="text-base font-normal text-[#8E8B82]">due</span>
+              </>
+            )}
           </p>
           <p className="text-xs text-[#575653] mt-1">
-            Spaced repetition queue
+            {revisions.length === 0 ? "No revisions scheduled" : "Spaced repetition queue"}
           </p>
         </div>
       </div>

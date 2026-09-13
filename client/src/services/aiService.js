@@ -1,36 +1,45 @@
 import api from "./api";
 
-export const explainCode = (language, code) => {
-  return api("/ai/explain", {
-    method: "POST",
-    body: JSON.stringify({ language, code }),
-  });
+export const getAIStatus = () => {
+  return api("/ai/status");
 };
 
-export const optimizeCode = (language, code) => {
-  return api("/ai/optimize", {
-    method: "POST",
-    body: JSON.stringify({ language, code }),
-  });
-};
-
-export const generateNotes = (data) => {
-  return api("/ai/notes", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-};
-
-export const analyzeResume = (resumeText) => {
+export const analyzeResume = ({ resumeText, jobDescription }) => {
   return api("/ai/resume", {
     method: "POST",
-    body: JSON.stringify({ resumeText }),
+    body: JSON.stringify({ resumeText, jobDescription }),
   });
 };
 
-export const generateInterviewQuestions = (topic, level) => {
+export const generateInterviewQuestions = ({
+  role = "Software Development Engineer",
+  skills = "",
+  topic = "Full Stack & System Architecture",
+  level = "Intermediate",
+  context = "",
+  resumeText = "",
+  jobDescription = "",
+  mode = "Mixed",
+  difficulty = "Mixed",
+  previousQuestions = [],
+}) => {
   return api("/ai/interview", {
     method: "POST",
-    body: JSON.stringify({ topic, level }),
+    body: JSON.stringify({
+      role,
+      skills,
+      topic,
+      level,
+      context,
+      resumeText,
+      jobDescription,
+      mode,
+      difficulty,
+      previousQuestions,
+    }),
   });
+};
+
+export const getProfileAIContext = () => {
+  return api("/ai/profile-context");
 };

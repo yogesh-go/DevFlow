@@ -45,6 +45,18 @@ function Revision() {
     fetchRevisions();
   }, [fetchRevisions]);
 
+  // React to new problems created across the workspace
+  useEffect(() => {
+    const handleProblemCreated = () => {
+      fetchRevisions();
+    };
+
+    window.addEventListener("devflow:problem-created", handleProblemCreated);
+    return () => {
+      window.removeEventListener("devflow:problem-created", handleProblemCreated);
+    };
+  }, [fetchRevisions]);
+
   const handleComplete = async (revisionId, confidence = "high") => {
     try {
       await completeRevision(revisionId, { confidence });

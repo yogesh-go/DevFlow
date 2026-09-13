@@ -1,17 +1,17 @@
 function TaskStats({ tasks }) {
-  const total = tasks.length;
+  const total = tasks?.length || 0;
 
-  const completed = tasks.filter(
+  const completed = tasks?.filter(
     (task) => task.status === "completed"
-  ).length;
+  ).length || 0;
 
-  const inProgress = tasks.filter(
+  const inProgress = tasks?.filter(
     (task) => task.status === "in-progress"
-  ).length;
+  ).length || 0;
 
-  const todo = tasks.filter(
+  const todo = tasks?.filter(
     (task) => task.status === "todo"
-  ).length;
+  ).length || 0;
 
   const completionPercentage =
     total === 0
@@ -26,7 +26,7 @@ function TaskStats({ tasks }) {
         </p>
 
         <h2 className="text-2xl font-bold text-[#18181B] mt-1">
-          {total}
+          {total === 0 ? "—" : total}
         </h2>
       </div>
 
@@ -36,7 +36,7 @@ function TaskStats({ tasks }) {
         </p>
 
         <h2 className="text-2xl font-bold text-[#18181B] mt-1">
-          {todo}
+          {total === 0 ? "—" : todo}
         </h2>
       </div>
 
@@ -46,7 +46,7 @@ function TaskStats({ tasks }) {
         </p>
 
         <h2 className="text-2xl font-bold text-[#865B20] mt-1">
-          {inProgress}
+          {total === 0 ? "—" : inProgress}
         </h2>
       </div>
 
@@ -56,11 +56,11 @@ function TaskStats({ tasks }) {
         </p>
 
         <h2 className="text-2xl font-bold text-[#426447] mt-1">
-          {completed}
+          {total === 0 ? "—" : completed}
         </h2>
 
         <p className="text-[11px] text-[#8E8B82] mt-0.5">
-          {completionPercentage}% complete
+          {total === 0 ? "No tasks yet" : `${completionPercentage}% complete`}
         </p>
       </div>
     </div>

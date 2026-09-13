@@ -10,7 +10,6 @@ import Button from "../components/ui/Button";
 import EmptyState from "../components/ui/EmptyState";
 import {
   getProblems,
-  createProblem,
   updateProblem,
   deleteProblem,
 } from "../services/problemService";
@@ -31,7 +30,7 @@ function Problems() {
     status: "all",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingProblem, setEditingProblem] = useState(null);
 
   const fetchProblems = useCallback(async () => {
@@ -52,18 +51,21 @@ function Problems() {
     fetchProblems();
   }, [fetchProblems]);
 
-  // Listen for top navbar "+ Add Problem" action
+  // Listen for problem creation events across DevFlow to refresh data
   useEffect(() => {
-    const handleOpenModal = () => {
-      setEditingProblem(null);
-      setIsModalOpen(true);
+    const handleProblemCreated = () => {
+      fetchProblems();
     };
 
-    window.addEventListener("devflow:open-problem-modal", handleOpenModal);
+    window.addEventListener("devflow:problem-created", handleProblemCreated);
     return () => {
-      window.removeEventListener("devflow:open-problem-modal", handleOpenModal);
+      window.removeEventListener("devflow:problem-created", handleProblemCreated);
     };
-  }, []);
+  }, [fetchProblems]);
+
+  const handleOpenAddProblem = () => {
+    window.dispatchEvent(new CustomEvent("devflow:open-problem-modal"));
+  };
 
   const handleFilterChange = (newFilters) => {
     setFilters({ ...newFilters, page: 1 });
@@ -85,18 +87,13 @@ function Problems() {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  const handleCreateOrUpdate = async (formData) => {
+  const handleUpdate = async (formData) => {
     if (editingProblem) {
       const res = await updateProblem(editingProblem._id, formData);
       toast.success("Problem updated successfully!");
       setProblems((prev) =>
         prev.map((p) => (p._id === editingProblem._id ? res.problem : p))
       );
-    } else {
-      const res = await createProblem(formData);
-      toast.success("Problem logged & spaced repetition scheduled!");
-      setFilters((prev) => ({ ...prev, page: 1 }));
-      fetchProblems();
     }
   };
 
@@ -143,10 +140,7 @@ function Problems() {
         <Button
           variant="primary"
           size="sm"
-          onClick={() => {
-            setEditingProblem(null);
-            setIsModalOpen(true);
-          }}
+          onClick={handleOpenAddProblem}
           className="shadow-xs self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
@@ -193,10 +187,7 @@ function Problems() {
               : "Get started by logging your first DSA problem to begin tracking progress and spaced repetition."
           }
           actionLabel="+ Add First Problem"
-          onAction={() => {
-            setEditingProblem(null);
-            setIsModalOpen(true);
-          }}
+          onAction={handleOpenAddProblem}
         />
       ) : (
         <div className="space-y-3">
@@ -217,7 +208,7 @@ function Problems() {
                 onUpdateStatus={handleUpdateStatus}
                 onEdit={(prob) => {
                   setEditingProblem(prob);
-                  setIsModalOpen(true);
+                  setIsEditModalOpen(true);
                 }}
                 onDelete={handleDelete}
               />
@@ -232,14 +223,14 @@ function Problems() {
         </div>
       )}
 
-      {/* Problem Modal */}
+      {/* Edit Problem Modal */}
       <ProblemModal
-        isOpen={isModalOpen}
+        isOpen={isEditModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsEditModalOpen(false);
           setEditingProblem(null);
         }}
-        onSubmit={handleCreateOrUpdate}
+        onSubmit={handleUpdate}
         initialData={editingProblem}
       />
     </div>

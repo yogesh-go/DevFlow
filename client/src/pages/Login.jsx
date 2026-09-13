@@ -40,7 +40,11 @@ function Login() {
       login(data.user, data.token);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "Failed to sign in. Please verify your credentials.");
+      if (err.message && err.message.toLowerCase().includes("verify your email")) {
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        setError(err.message || "Failed to sign in. Please verify your credentials.");
+      }
     } finally {
       setLoading(false);
     }
