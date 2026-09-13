@@ -8,7 +8,7 @@ function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F6F2] flex items-center justify-center">
         <LoadingSpinner message="Authenticating session..." />
       </div>
     );

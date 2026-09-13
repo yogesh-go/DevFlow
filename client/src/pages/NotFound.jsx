@@ -3,29 +3,27 @@ import Button from "../components/ui/Button";
 
 function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-      <section className="text-center">
-
-        <p className="text-7xl font-bold text-blue-500">
+    <div className="flex min-h-screen items-center justify-center bg-[#F7F6F2] px-6 text-[#18181B]">
+      <div className="text-center space-y-4 max-w-md">
+        <p className="text-6xl font-bold font-mono tracking-tight text-[#8E8B82]">
           404
         </p>
-
-        <h1 className="mt-6 text-3xl font-bold">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#18181B]">
           Page not found
         </h1>
-
-        <p className="mt-3 max-w-md text-slate-400">
-          The page you're looking for doesn't exist or may have been moved.
+        <p className="text-xs sm:text-sm text-[#575653] leading-relaxed">
+          The requested route does not exist in this workspace or may have been moved.
         </p>
 
-        <Link to="/" className="mt-8 inline-block">
-          <Button>
-            Back to Home
-          </Button>
-        </Link>
-
-      </section>
-    </main>
+        <div className="pt-2">
+          <Link to="/">
+            <Button variant="primary" size="md">
+              Return to Workspace
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
 

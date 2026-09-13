@@ -5,7 +5,7 @@ function TaskSearch({ search, onSearchChange }) {
       value={search}
       onChange={(event) => onSearchChange(event.target.value)}
       placeholder="Search tasks..."
-      className="w-full px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full px-3.5 py-2 text-xs rounded-lg bg-white border border-[#E6E3DB] text-[#18181B] placeholder-[#8E8B82] focus:outline-none focus:border-[#657858] focus:ring-2 focus:ring-[#657858]/15"
     />
   );
 }

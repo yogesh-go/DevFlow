@@ -1,14 +1,14 @@
 export function DifficultyBadge({ difficulty }) {
   const styles = {
-    Easy: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    Medium: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    Hard: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    Easy: "bg-[#EDF4EE] text-[#426447] border-[#BCD4C2]",
+    Medium: "bg-[#FAF4E8] text-[#865B20] border-[#EAD5AC]",
+    Hard: "bg-[#FBF0F0] text-[#933D3D] border-[#E8BFBF]",
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
-        styles[difficulty] || "bg-slate-800 text-slate-300 border-slate-700"
+      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border tracking-tight ${
+        styles[difficulty] || "bg-[#F2F0E8] text-[#575653] border-[#E6E3DB]"
       }`}
     >
       {difficulty}
@@ -18,16 +18,16 @@ export function DifficultyBadge({ difficulty }) {
 
 export function StatusBadge({ status }) {
   const styles = {
-    "Not Started": "bg-slate-800 text-slate-400 border-slate-700",
-    Attempted: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    Solved: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    "Need Revision": "bg-purple-500/10 text-purple-400 border-purple-500/20",
+    "Not Started": "bg-[#F2F0E8] text-[#716F6A] border-[#E6E3DB]",
+    Attempted: "bg-[#FAF4E8] text-[#865B20] border-[#EAD5AC]",
+    Solved: "bg-[#EDF4EE] text-[#426447] border-[#BCD4C2]",
+    "Need Revision": "bg-[#F3EFF7] text-[#6A4A87] border-[#DACFE4]",
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
-        styles[status] || "bg-slate-800 text-slate-300 border-slate-700"
+      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border tracking-tight ${
+        styles[status] || "bg-[#F2F0E8] text-[#575653] border-[#E6E3DB]"
       }`}
     >
       {status}
@@ -37,21 +37,27 @@ export function StatusBadge({ status }) {
 
 export function PlatformBadge({ platform }) {
   const styles = {
-    LeetCode: "bg-amber-600/10 text-amber-300 border-amber-600/20",
-    Codeforces: "bg-red-600/10 text-red-300 border-red-600/20",
-    CodeChef: "bg-amber-800/15 text-amber-200 border-amber-700/30",
-    GeeksforGeeks: "bg-emerald-600/10 text-emerald-300 border-emerald-600/20",
-    HackerRank: "bg-green-600/10 text-green-300 border-green-600/20",
-    Other: "bg-slate-800 text-slate-400 border-slate-700",
+    LeetCode: "bg-[#FBF3E8] text-[#9A6014] border-[#EAD5AC]",
+    Codeforces: "bg-[#FBF0F0] text-[#933D3D] border-[#E8BFBF]",
+    CodeChef: "bg-[#F5EFEB] text-[#7D4D2E] border-[#D9C7BC]",
+    GeeksforGeeks: "bg-[#EDF4EE] text-[#396641] border-[#BCD4C2]",
+    HackerRank: "bg-[#EDF4EE] text-[#32613B] border-[#BCD4C2]",
+    Other: "bg-[#F2F0E8] text-[#575653] border-[#E6E3DB]",
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border ${
-        styles[platform] || "bg-slate-800 text-slate-300 border-slate-700"
+      className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border tracking-tight ${
+        styles[platform] || "bg-[#F2F0E8] text-[#575653] border-[#E6E3DB]"
       }`}
     >
       {platform}
     </span>
   );
 }
+
+export default {
+  DifficultyBadge,
+  StatusBadge,
+  PlatformBadge,
+};

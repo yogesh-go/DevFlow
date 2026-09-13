@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "../ui/Button";
 
 function TaskEditForm({
   task,
@@ -7,7 +8,8 @@ function TaskEditForm({
 }) {
   const [formData, setFormData] = useState({
     title: task.title,
-    description: task.description || "",
+    description: task.description,
+    status: task.status,
     priority: task.priority,
   });
 
@@ -16,24 +18,22 @@ function TaskEditForm({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setFormData((previousData) => ({
-      ...previousData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setError("");
     setLoading(true);
 
     try {
       await onTaskUpdated(task._id, formData);
       onCancel();
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.message || "Failed to update task");
     } finally {
       setLoading(false);
     }
@@ -42,58 +42,75 @@ function TaskEditForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4"
+      className="bg-[#FAF9F5] border border-[#E6E3DB] rounded-lg p-4 space-y-3"
     >
       {error && (
-        <p className="text-sm text-red-400">
-          {error}
-        </p>
+        <p className="text-xs text-[#933D3D]">{error}</p>
       )}
 
-      <input
-        type="text"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        required
-        className="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <div>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-1.5 rounded-md bg-white border border-[#E6E3DB] text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#657858]/15"
+        />
+      </div>
 
-      <textarea
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        rows="3"
-        className="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <div>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows="2"
+          className="w-full px-3 py-1.5 rounded-md bg-white border border-[#E6E3DB] text-xs text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#657858]/15"
+        />
+      </div>
 
-      <select
-        name="priority"
-        value={formData.priority}
-        onChange={handleChange}
-        className="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-500 disabled:opacity-50"
+      <div className="flex gap-2">
+        <select
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          className="w-1/2 px-2.5 py-1.5 rounded-md bg-white border border-[#E6E3DB] text-xs text-[#18181B]"
         >
-          {loading ? "Saving..." : "Save"}
-        </button>
+          <option value="todo">To Do</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
 
-        <button
+        <select
+          name="priority"
+          value={formData.priority}
+          onChange={handleChange}
+          className="w-1/2 px-2.5 py-1.5 rounded-md bg-white border border-[#E6E3DB] text-xs text-[#18181B]"
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-2">
+        <Button
           type="button"
+          variant="secondary"
+          size="xs"
           onClick={onCancel}
-          className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm hover:bg-slate-700"
         >
           Cancel
-        </button>
+        </Button>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="xs"
+          loading={loading}
+        >
+          Save
+        </Button>
       </div>
     </form>
   );

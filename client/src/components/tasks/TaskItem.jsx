@@ -17,7 +17,7 @@ function TaskItem({
 
   if (isEditing) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+      <div className="bg-white border border-[#E6E3DB] rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
         <TaskEditForm
           task={task}
           onTaskUpdated={onTaskUpdated}
@@ -28,21 +28,21 @@ function TaskItem({
   }
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+    <div className="bg-white border border-[#E6E3DB] rounded-xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all hover:border-[#D5D1C6]">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-1">
           <h3
-            className={`text-lg font-semibold ${
+            className={`text-sm font-bold ${
               task.status === "completed"
-                ? "text-slate-500 line-through"
-                : "text-white"
+                ? "text-[#8E8B82] line-through"
+                : "text-[#18181B]"
             }`}
           >
             {task.title}
           </h3>
 
           {task.description && (
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-xs text-[#575653] leading-relaxed">
               {task.description}
             </p>
           )}
@@ -54,17 +54,17 @@ function TaskItem({
         />
       </div>
 
-      <div className="flex items-center justify-between mt-5 gap-4">
+      <div className="flex items-center justify-between mt-3.5 pt-3 border-t border-[#F2F0E8] gap-4">
         <TaskBadge
           type="status"
           value={task.status}
         />
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <select
             value={task.status}
             onChange={handleStatusChange}
-            className="text-sm px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-xs px-2.5 py-1 rounded-md bg-[#FAF9F5] border border-[#E6E3DB] text-[#18181B] focus:outline-none focus:border-[#657858]"
           >
             <option value="todo">Todo</option>
             <option value="in-progress">In Progress</option>
@@ -74,7 +74,7 @@ function TaskItem({
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="text-sm text-blue-400 hover:text-blue-300"
+            className="text-xs font-semibold text-[#575653] hover:text-[#18181B]"
           >
             Edit
           </button>
@@ -90,7 +90,7 @@ function TaskItem({
                 onTaskDeleted(task._id);
               }
             }}
-            className="text-sm text-red-400 hover:text-red-300"
+            className="text-xs font-semibold text-[#933D3D] hover:text-[#7A2E2E]"
           >
             Delete
           </button>

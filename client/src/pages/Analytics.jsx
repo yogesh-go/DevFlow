@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import {
-  BarChart3,
   Flame,
   CheckCircle2,
   TrendingUp,
-  Award,
   Repeat,
   Calendar,
   Layers,
   RefreshCw,
+  Award,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Button from "../components/ui/Button";
 import { getAnalytics } from "../services/analyticsService";
 
 function Analytics() {
@@ -37,7 +37,7 @@ function Analytics() {
   if (loading) {
     return (
       <div className="py-24 flex justify-center">
-        <LoadingSpinner message="Calculating real-time analytics from database..." />
+        <LoadingSpinner message="Calculating database analytics..." />
       </div>
     );
   }
@@ -52,115 +52,161 @@ function Analytics() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Performance & Growth Analytics
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#E6E3DB] pb-5">
+        <div className="space-y-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#657858]">
+            Database Intelligence
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#18181B]">
+            Analytics & Progress
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Real database metrics analyzing your DSA mastery, consistency, and revision accuracy.
+          <p className="text-xs sm:text-sm text-[#575653]">
+            Verified metrics analyzing problem solve velocity, consistency streaks, and topic coverage.
           </p>
         </div>
 
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={fetchAnalytics}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-colors self-start sm:self-auto"
+          className="self-start sm:self-auto"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           <span>Refresh Data</span>
-        </button>
+        </Button>
       </div>
 
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-400">Total Solved</span>
-            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-white mt-3">
+      {/* KPI Overview Strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 py-2 border-b border-[#E6E3DB]/80 pb-8">
+        <div>
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#8E8B82] block">
+            Total Solved
+          </span>
+          <p className="text-3xl sm:text-4xl font-extrabold text-[#18181B] tracking-tight mt-1.5">
             {overview.solvedProblems}
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            out of {overview.totalProblems} tracked problems
+          </p>
+          <p className="text-xs text-[#575653] mt-1">
+            out of {overview.totalProblems} tracked
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-400">Current Streak</span>
-            <Flame className="h-5 w-5 text-amber-400 fill-amber-400" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-amber-400 mt-3">
-            {overview.currentStreak} <span className="text-base font-normal text-slate-400">days</span>
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Longest streak: {overview.longestStreak} days
+        <div>
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#8E8B82] block">
+            Current Streak
+          </span>
+          <p className="text-3xl sm:text-4xl font-extrabold text-[#865B20] tracking-tight mt-1.5 flex items-baseline gap-1.5">
+            <span>{overview.currentStreak}</span>
+            <span className="text-base font-normal text-[#8E8B82]">days</span>
+          </p>
+          <p className="text-xs text-[#575653] mt-1">
+            Longest record: {overview.longestStreak || overview.currentStreak} days
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-400">Success Rate</span>
-            <TrendingUp className="h-5 w-5 text-blue-400" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-blue-400 mt-3">
-            {overview.successRate}%
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            {overview.attemptedProblems} in progress / attempted
+        <div>
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#8E8B82] block">
+            Success Rate
+          </span>
+          <p className="text-3xl sm:text-4xl font-extrabold text-[#18181B] tracking-tight mt-1.5 flex items-baseline gap-1.5">
+            <span>{overview.successRate}%</span>
+          </p>
+          <p className="text-xs text-[#575653] mt-1">
+            {overview.attemptedProblems || 0} currently attempted
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-400">Revision Accuracy</span>
-            <Repeat className="h-5 w-5 text-purple-400" />
-          </div>
-          <h2 className="text-3xl font-extrabold text-purple-400 mt-3">
-            {revisions.completionRate}%
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            {revisions.completedRevisions} of {revisions.totalRevisions} revisions done
+        <div>
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#8E8B82] block">
+            Revision Accuracy
+          </span>
+          <p className="text-3xl sm:text-4xl font-extrabold text-[#657858] tracking-tight mt-1.5 flex items-baseline gap-1.5">
+            <span>{revisions.completionRate}%</span>
+          </p>
+          <p className="text-xs text-[#575653] mt-1">
+            {revisions.completedRevisions} of {revisions.totalRevisions} reviews done
           </p>
         </div>
       </div>
 
-      {/* Grid: Difficulty Distribution & Weekly Activity */}
+      {/* Grid: Weekly Consistency Chart & Difficulty Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Difficulty Breakdown */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-white">
-              Problems by Difficulty
-            </h3>
-            <span className="text-xs text-slate-400">Target Distribution</span>
+        {/* Weekly Consistency Bar Chart */}
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-[#18181B]">
+                7-Day Solve Consistency
+              </h3>
+              <p className="text-xs text-[#575653]">
+                Problems solved per day across the past week.
+              </p>
+            </div>
+            <Calendar className="h-4 w-4 text-[#8E8B82]" />
           </div>
 
-          <div className="space-y-4">
+          <div className="h-44 flex items-end justify-between gap-3 pt-6 px-2">
+            {weeklyActivity?.map((item) => {
+              const heightPercent =
+                maxWeeklyCount > 0
+                  ? Math.max(Math.round((item.solvedCount / maxWeeklyCount) * 100), 8)
+                  : 8;
+
+              return (
+                <div key={item.date} className="flex-1 flex flex-col items-center gap-2">
+                  <span className="text-[11px] font-semibold text-[#657858]">
+                    {item.solvedCount}
+                  </span>
+                  <div className="w-full max-w-[32px] bg-[#F2F0E8] rounded-t-md h-28 flex items-end overflow-hidden">
+                    <div
+                      className="w-full bg-[#657858] hover:bg-[#4E5D44] transition-all rounded-t-md"
+                      style={{ height: `${item.solvedCount > 0 ? heightPercent : 0}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-medium text-[#8E8B82]">{item.day}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Difficulty Breakdown */}
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-[#18181B]">
+                Difficulty Breakdown
+              </h3>
+              <p className="text-xs text-[#575653]">
+                Distribution of attempted vs solved problems.
+              </p>
+            </div>
+            <Award className="h-4 w-4 text-[#8E8B82]" />
+          </div>
+
+          <div className="space-y-4 pt-2">
             {["Easy", "Medium", "Hard"].map((diff) => {
               const stat = difficulty[diff] || { total: 0, solved: 0 };
               const percent = stat.total > 0 ? Math.round((stat.solved / stat.total) * 100) : 0;
               const barColor =
                 diff === "Easy"
-                  ? "bg-emerald-500"
+                  ? "bg-[#657858]"
                   : diff === "Medium"
-                  ? "bg-amber-500"
-                  : "bg-rose-500";
+                  ? "bg-[#865B20]"
+                  : "bg-[#933D3D]";
 
               return (
                 <div key={diff} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-200">{diff}</span>
-                    <span className="text-slate-400">
+                    <span className="font-semibold text-[#18181B]">{diff}</span>
+                    <span className="text-[#8E8B82]">
                       {stat.solved} / {stat.total} solved ({percent}%)
                     </span>
                   </div>
-                  <div className="h-2.5 w-full rounded-full bg-slate-800 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-[#EAE7DF] overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-700 ${barColor}`}
+                      className={`h-full rounded-full transition-all duration-500 ${barColor}`}
                       style={{ width: `${percent}%` }}
                     />
                   </div>
@@ -169,78 +215,44 @@ function Analytics() {
             })}
           </div>
         </div>
-
-        {/* Weekly Activity Bar Chart */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-white">
-              7-Day Activity & Solves
-            </h3>
-            <span className="text-xs text-slate-400">Problems solved per day</span>
-          </div>
-
-          <div className="h-44 flex items-end justify-between gap-2 pt-4 px-2">
-            {weeklyActivity?.map((item) => {
-              const heightPercent =
-                maxWeeklyCount > 0
-                  ? Math.max(Math.round((item.solvedCount / maxWeeklyCount) * 100), 10)
-                  : 10;
-
-              return (
-                <div key={item.date} className="flex-1 flex flex-col items-center gap-2">
-                  <span className="text-[11px] font-semibold text-blue-400">
-                    {item.solvedCount}
-                  </span>
-                  <div className="w-full max-w-[28px] bg-slate-800 rounded-t-md h-28 flex items-end overflow-hidden">
-                    <div
-                      className="w-full bg-blue-600 hover:bg-blue-500 transition-all rounded-t-md"
-                      style={{ height: `${item.solvedCount > 0 ? heightPercent : 0}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-slate-400">{item.day}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
 
-      {/* Topic Mastery Breakdown */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-5">
-        <div className="flex items-center justify-between">
+      {/* Topic Coverage & Mastery Breakdown */}
+      <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
           <div>
-            <h3 className="text-base font-semibold text-white">
-              Topic Mastery & Coverage
+            <h3 className="text-sm font-bold text-[#18181B]">
+              Topic Performance & Coverage
             </h3>
-            <p className="text-xs text-slate-400">
-              Breakdown of solved problems across key interview DSA categories.
+            <p className="text-xs text-[#575653]">
+              Breakdown of solved problems across key algorithmic topics.
             </p>
           </div>
-          <Layers className="h-5 w-5 text-slate-400" />
+          <Layers className="h-4 w-4 text-[#8E8B82]" />
         </div>
 
         {topics?.length === 0 ? (
-          <p className="text-xs text-slate-400 text-center py-6">
-            No topic data available yet. Start logging problems to visualize topic mastery.
+          <p className="text-xs text-[#8E8B82] text-center py-6">
+            No topic data available yet. Solve problems to visualize topic coverage.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
             {topics.map((t) => {
               const percent = t.total > 0 ? Math.round((t.solved / t.total) * 100) : 0;
               return (
                 <div
                   key={t.topic}
-                  className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 space-y-2"
+                  className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 space-y-2 hover:border-[#D5D1C6] transition-colors"
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-white">{t.topic}</span>
-                    <span className="text-slate-400">
+                    <span className="font-semibold text-[#18181B]">{t.topic}</span>
+                    <span className="text-[#8E8B82]">
                       {t.solved} / {t.total} ({percent}%)
                     </span>
                   </div>
-                  <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+                  <div className="h-1.5 w-full rounded-full bg-[#EAE7DF] overflow-hidden">
                     <div
-                      className="h-full bg-blue-500 rounded-full transition-all"
+                      className="h-full bg-[#657858] rounded-full transition-all"
                       style={{ width: `${percent}%` }}
                     />
                   </div>
@@ -250,6 +262,26 @@ function Analytics() {
           </div>
         )}
       </div>
+
+      {/* Platform Breakdown */}
+      {platforms?.length > 0 && (
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <h3 className="text-sm font-bold text-[#18181B]">
+            Platform Distribution
+          </h3>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {platforms.map((p) => (
+              <span
+                key={p.platform}
+                className="rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-3 py-1 text-xs text-[#575653] font-medium"
+              >
+                <span className="font-semibold text-[#18181B]">{p.platform}</span>:{" "}
+                {p.count} problems
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

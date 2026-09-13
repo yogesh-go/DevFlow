@@ -1,21 +1,16 @@
+import { Loader2 } from "lucide-react";
+
 function Loader({ size = "md", text = "" }) {
   const sizes = {
-    sm: "h-5 w-5 border-2",
-    md: "h-8 w-8 border-[3px]",
-    lg: "h-12 w-12 border-4",
+    sm: "h-4 w-4",
+    md: "h-6 w-6",
+    lg: "h-8 w-8",
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
-      <div
-        className={`${sizes[size]} animate-spin rounded-full border-blue-600 border-t-transparent`}
-      ></div>
-
-      {text && (
-        <p className="text-sm text-slate-400">
-          {text}
-        </p>
-      )}
+    <div className="flex flex-col items-center justify-center gap-2">
+      <Loader2 className={`${sizes[size] || sizes.md} animate-spin text-[#657858]`} />
+      {text && <p className="text-xs font-medium text-[#575653]">{text}</p>}
     </div>
   );
 }

@@ -52,29 +52,29 @@ function ProblemFilters({ filters, onFilterChange, onReset }) {
     filters.status !== "all";
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-4 space-y-3">
-      {/* Search Bar */}
+    <div className="rounded-xl border border-[#E6E3DB] bg-white p-4 space-y-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-[#8E8B82]" />
         <input
           type="text"
           value={filters.search || ""}
           onChange={(e) => handleChange("search", e.target.value)}
-          placeholder="Search problems by title or keywords..."
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 py-2.5 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="Search problems by title, keywords, or patterns..."
+          className="w-full rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] py-2 pl-10 pr-4 text-xs text-[#18181B] placeholder-[#8E8B82] outline-none transition-all focus:border-[#657858] focus:bg-white focus:ring-2 focus:ring-[#657858]/15"
         />
       </div>
 
-      {/* Filter Dropdowns Grid */}
+      {/* Filter Dropdowns */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2.5 pt-1">
         <div>
-          <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">
+          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#8E8B82] mb-1">
             Topic
           </label>
           <select
             value={filters.topic || "all"}
             onChange={(e) => handleChange("topic", e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-[#E6E3DB] bg-white px-2.5 py-1.5 text-xs text-[#18181B] focus:border-[#657858] focus:outline-none transition-colors"
           >
             {TOPICS.map((t) => (
               <option key={t} value={t}>
@@ -85,13 +85,13 @@ function ProblemFilters({ filters, onFilterChange, onReset }) {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">
+          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#8E8B82] mb-1">
             Difficulty
           </label>
           <select
             value={filters.difficulty || "all"}
             onChange={(e) => handleChange("difficulty", e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-[#E6E3DB] bg-white px-2.5 py-1.5 text-xs text-[#18181B] focus:border-[#657858] focus:outline-none transition-colors"
           >
             {DIFFICULTIES.map((d) => (
               <option key={d} value={d}>
@@ -102,13 +102,13 @@ function ProblemFilters({ filters, onFilterChange, onReset }) {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">
+          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#8E8B82] mb-1">
             Platform
           </label>
           <select
             value={filters.platform || "all"}
             onChange={(e) => handleChange("platform", e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-[#E6E3DB] bg-white px-2.5 py-1.5 text-xs text-[#18181B] focus:border-[#657858] focus:outline-none transition-colors"
           >
             {PLATFORMS.map((p) => (
               <option key={p} value={p}>
@@ -119,13 +119,13 @@ function ProblemFilters({ filters, onFilterChange, onReset }) {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">
+          <label className="block text-[10px] font-semibold uppercase tracking-wider text-[#8E8B82] mb-1">
             Status
           </label>
           <select
             value={filters.status || "all"}
             onChange={(e) => handleChange("status", e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-[#E6E3DB] bg-white px-2.5 py-1.5 text-xs text-[#18181B] focus:border-[#657858] focus:outline-none transition-colors"
           >
             {STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -140,10 +140,10 @@ function ProblemFilters({ filters, onFilterChange, onReset }) {
             type="button"
             onClick={onReset}
             disabled={!isFiltered}
-            className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-3 py-1.5 text-xs font-medium text-[#575653] hover:bg-white hover:text-[#18181B] hover:border-[#D5D1C6] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Reset</span>
+            <RotateCcw className="h-3 w-3" />
+            <span>Reset Filters</span>
           </button>
         </div>
       </div>

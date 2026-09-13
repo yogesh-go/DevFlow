@@ -8,14 +8,14 @@ function TaskList({
 }) {
   if (tasks.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center">
-        <h3 className="text-white font-semibold">
+      <div className="bg-white border border-dashed border-[#D5D1C6] rounded-xl p-8 text-center">
+        <h3 className="text-sm font-bold text-[#18181B]">
           {hasFilters
             ? "No matching tasks"
             : "No tasks yet"}
         </h3>
 
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="text-xs text-[#575653] mt-1">
           {hasFilters
             ? "Try changing your search or filters."
             : "Create your first task to get started."}
@@ -25,7 +25,7 @@ function TaskList({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {tasks.map((task) => (
         <TaskItem
           key={task._id}

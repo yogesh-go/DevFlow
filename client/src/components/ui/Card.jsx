@@ -4,13 +4,22 @@ function Card({
   children,
   className = "",
   hover = false,
+  surface = "white", // 'white' | 'elevated' | 'subtle'
   ...props
 }) {
+  const surfaces = {
+    white: "bg-white",
+    elevated: "bg-[#FAF9F5]",
+    subtle: "bg-[#F2F0E8]",
+  };
+
   return (
     <div
       className={clsx(
-        "rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-lg transition-all duration-300",
-        hover && "hover:-translate-y-1 hover:border-blue-600 hover:shadow-blue-500/10",
+        "rounded-xl border border-[#E6E3DB] p-5 transition-all duration-200",
+        surfaces[surface] || surfaces.white,
+        "shadow-[0_1px_3px_rgba(0,0,0,0.03)]",
+        hover && "hover:border-[#D5D1C6] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
         className
       )}
       {...props}

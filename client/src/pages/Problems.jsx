@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Code2, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
+import { Plus, Code2, AlertCircle, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import ProblemFilters from "../components/problems/ProblemFilters";
 import ProblemItem from "../components/problems/ProblemItem";
 import ProblemModal from "../components/problems/ProblemModal";
 import Pagination from "../components/tasks/Pagination";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import Button from "../components/ui/Button";
+import EmptyState from "../components/ui/EmptyState";
 import {
   getProblems,
   createProblem,
@@ -92,7 +94,7 @@ function Problems() {
       );
     } else {
       const res = await createProblem(formData);
-      toast.success("Problem created and spaced repetition scheduled!");
+      toast.success("Problem logged & spaced repetition scheduled!");
       setFilters((prev) => ({ ...prev, page: 1 }));
       fetchProblems();
     }
@@ -124,31 +126,35 @@ function Problems() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header & Metrics */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            DSA Problem Tracker
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#E6E3DB] pb-5">
+        <div className="space-y-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#657858]">
+            DSA Knowledge Base
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#18181B]">
+            Problems
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Log, categorize, and master your data structures and algorithms preparation.
+          <p className="text-xs sm:text-sm text-[#575653]">
+            Track what you've solved, what needs revision, and where you're improving.
           </p>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="sm"
           onClick={() => {
             setEditingProblem(null);
             setIsModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500 transition-all self-start sm:self-auto"
+          className="shadow-xs self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           <span>Add Problem</span>
-        </button>
+        </Button>
       </div>
 
-      {/* Filter Bar */}
+      {/* Filter Toolbar */}
       <ProblemFilters
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -157,14 +163,14 @@ function Problems() {
 
       {/* Error Alert */}
       {error && (
-        <div className="flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 shrink-0" />
+        <div className="flex items-center justify-between rounded-lg border border-[#E8BFBF] bg-[#FBF0F0] p-3 text-xs text-[#933D3D]">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <p>{error}</p>
           </div>
           <button
             onClick={fetchProblems}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 px-3 py-1 text-xs font-semibold hover:bg-red-500/20 text-red-300"
+            className="inline-flex items-center gap-1 font-semibold hover:underline"
           >
             <RefreshCw className="h-3 w-3" />
             <span>Retry</span>
@@ -172,44 +178,38 @@ function Problems() {
         </div>
       )}
 
-      {/* Problem List Content */}
+      {/* Problems Content */}
       {loading ? (
         <div className="py-20 flex justify-center">
           <LoadingSpinner message="Fetching problems from database..." />
         </div>
       ) : problems.length === 0 ? (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
-            <Code2 className="h-6 w-6" />
-          </div>
-          <h3 className="mt-4 text-base font-semibold text-white">
-            No problems found
-          </h3>
-          <p className="mt-1 text-sm text-slate-400 max-w-sm mx-auto">
-            {filters.search || filters.difficulty !== "all" || filters.topic !== "all"
-              ? "Try adjusting your search filters to find matching problems."
-              : "Get started by logging your first DSA problem to begin tracking progress and spaced repetition."}
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setEditingProblem(null);
-              setIsModalOpen(true);
-            }}
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add First Problem</span>
-          </button>
-        </div>
+        <EmptyState
+          icon={Code2}
+          title="No problems found"
+          description={
+            filters.search || filters.difficulty !== "all" || filters.topic !== "all"
+              ? "Try adjusting your search criteria or resetting filters."
+              : "Get started by logging your first DSA problem to begin tracking progress and spaced repetition."
+          }
+          actionLabel="+ Add First Problem"
+          onAction={() => {
+            setEditingProblem(null);
+            setIsModalOpen(true);
+          }}
+        />
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center justify-between px-1 text-xs text-slate-400 font-medium">
-            <span>Showing {problems.length} of {pagination.totalProblems} problems</span>
-            <span>Page {pagination.page} of {pagination.totalPages}</span>
+          <div className="flex items-center justify-between px-1 text-xs text-[#8E8B82] font-medium">
+            <span>
+              Showing {problems.length} of {pagination.totalProblems} problems
+            </span>
+            <span>
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {problems.map((problem) => (
               <ProblemItem
                 key={problem._id}
@@ -232,7 +232,7 @@ function Problems() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Problem Modal */}
       <ProblemModal
         isOpen={isModalOpen}
         onClose={() => {

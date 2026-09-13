@@ -1,43 +1,40 @@
 import { NavLink, Link } from "react-router-dom";
-
 import Button from "../ui/Button";
 import Container from "../ui/Container";
 import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const navItems = [
-    { name: "Home", path: "/" },
+    { name: "Overview", path: "/" },
     { name: "Features", path: "/features" },
     { name: "Pricing", path: "/pricing" },
   ];
 
   const navLinkClass = ({ isActive }) =>
     isActive
-      ? "text-blue-500"
-      : "text-slate-300 hover:text-white";
+      ? "text-[#18181B] font-semibold text-xs tracking-tight"
+      : "text-[#575653] hover:text-[#18181B] text-xs font-medium tracking-tight transition-colors";
 
   return (
-    <header className="border-b border-slate-800 bg-slate-950">
+    <header className="sticky top-0 z-40 border-b border-[#E6E3DB] bg-[#FAF9F5]/90 backdrop-blur-md">
       <Container>
-        <nav className="flex items-center justify-between h-16">
+        <nav className="flex items-center justify-between h-14">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <span className="text-blue-500 text-2xl font-bold">
-              &lt;/&gt;
-            </span>
-
-            <Link
-              to="/"
-              className="text-2xl font-bold text-white hover:text-blue-400 transition-colors"
-            >
-              DevFlow
+          <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#18181B] text-white font-mono text-xs font-bold transition-transform group-hover:scale-105">
+                &lt;/&gt;
+              </div>
+              <span className="text-base font-bold tracking-tight text-[#18181B]">
+                DevFlow
+              </span>
             </Link>
           </div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -50,18 +47,18 @@ function Navbar() {
           </div>
 
           {/* Authentication Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard">
-                  <Button size="sm">
-                    Dashboard →
+                  <Button variant="primary" size="xs">
+                    Workspace →
                   </Button>
                 </Link>
 
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="xs"
                   onClick={logout}
                 >
                   Logout
@@ -70,14 +67,14 @@ function Navbar() {
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="outline" size="sm">
+                  <Button variant="ghost" size="xs">
                     Login
                   </Button>
                 </Link>
 
                 <Link to="/signup">
-                  <Button size="sm">
-                    Get Started
+                  <Button variant="primary" size="xs">
+                    Get Started Free
                   </Button>
                 </Link>
               </>

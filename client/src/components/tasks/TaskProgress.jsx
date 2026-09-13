@@ -11,26 +11,26 @@ function TaskProgress({ tasks }) {
       : Math.round((completed / total) * 100);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mt-6">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-white border border-[#E6E3DB] rounded-xl p-5 mt-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <div className="flex items-center justify-between mb-2">
         <div>
-          <h3 className="text-white font-semibold">
+          <h3 className="text-xs font-bold text-[#18181B]">
             Overall Progress
           </h3>
 
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-[11px] text-[#575653] mt-0.5">
             {completed} of {total} tasks completed
           </p>
         </div>
 
-        <span className="text-blue-400 font-semibold">
+        <span className="text-xs font-bold text-[#657858]">
           {percentage}%
         </span>
       </div>
 
-      <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-[#EAE7DF] rounded-full overflow-hidden">
         <div
-          className="h-full bg-blue-600 rounded-full transition-all duration-500"
+          className="h-full bg-[#657858] rounded-full transition-all duration-500"
           style={{
             width: `${percentage}%`,
           }}

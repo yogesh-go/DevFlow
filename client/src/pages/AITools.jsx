@@ -8,7 +8,6 @@ import {
   HelpCircle,
   Copy,
   Check,
-  AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "../components/ui/Button";
@@ -151,33 +150,33 @@ function AITools() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>AI Developer Suite</span>
+      <div className="border-b border-[#E6E3DB] pb-5">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EEF2EB] border border-[#C6D2BF] text-[#4E5D44] text-[11px] font-semibold uppercase tracking-wider mb-2">
+          <Sparkles className="h-3 w-3 text-[#657858]" />
+          <span>Developer Studio</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          AI Developer Tools
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#18181B]">
+          AI Tools
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Accelerate your SDE preparation with algorithmic code analysis, complexity evaluation, note generation, and ATS resume review.
+        <p className="text-xs sm:text-sm text-[#575653] mt-1">
+          Accelerate your algorithmic mastery with automated code explanation, complexity optimization, note generation, and ATS resume evaluation.
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3 text-xs sm:text-sm font-medium">
+      {/* Mode Selection Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-[#E6E3DB] pb-3 text-xs font-semibold">
         <button
           onClick={() => {
             setActiveTab("explain");
             setResult(null);
           }}
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors cursor-pointer ${
             activeTab === "explain"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              ? "bg-[#18181B] text-white"
+              : "bg-white text-[#575653] hover:text-[#18181B] border border-[#E6E3DB]"
           }`}
         >
-          <Code2 className="h-4 w-4" />
+          <Code2 className="h-3.5 w-3.5" />
           <span>Explain Code</span>
         </button>
 
@@ -186,13 +185,13 @@ function AITools() {
             setActiveTab("optimize");
             setResult(null);
           }}
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors cursor-pointer ${
             activeTab === "optimize"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              ? "bg-[#18181B] text-white"
+              : "bg-white text-[#575653] hover:text-[#18181B] border border-[#E6E3DB]"
           }`}
         >
-          <Zap className="h-4 w-4" />
+          <Zap className="h-3.5 w-3.5" />
           <span>Optimize Code</span>
         </button>
 
@@ -201,13 +200,13 @@ function AITools() {
             setActiveTab("notes");
             setResult(null);
           }}
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors cursor-pointer ${
             activeTab === "notes"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              ? "bg-[#18181B] text-white"
+              : "bg-white text-[#575653] hover:text-[#18181B] border border-[#E6E3DB]"
           }`}
         >
-          <FileText className="h-4 w-4" />
+          <FileText className="h-3.5 w-3.5" />
           <span>Generate Notes</span>
         </button>
 
@@ -216,13 +215,13 @@ function AITools() {
             setActiveTab("resume");
             setResult(null);
           }}
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors cursor-pointer ${
             activeTab === "resume"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              ? "bg-[#18181B] text-white"
+              : "bg-white text-[#575653] hover:text-[#18181B] border border-[#E6E3DB]"
           }`}
         >
-          <FileCheck2 className="h-4 w-4" />
+          <FileCheck2 className="h-3.5 w-3.5" />
           <span>Resume ATS Analyzer</span>
         </button>
 
@@ -231,30 +230,32 @@ function AITools() {
             setActiveTab("interview");
             setResult(null);
           }}
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 transition-all ${
+          className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors cursor-pointer ${
             activeTab === "interview"
-              ? "bg-blue-600 text-white"
-              : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+              ? "bg-[#18181B] text-white"
+              : "bg-white text-[#575653] hover:text-[#18181B] border border-[#E6E3DB]"
           }`}
         >
-          <HelpCircle className="h-4 w-4" />
-          <span>Interview Prep</span>
+          <HelpCircle className="h-3.5 w-3.5" />
+          <span>Interview Questions</span>
         </button>
       </div>
 
       {/* Main Two-Pane View */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Form Pane */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4">
+        {/* Left Input Pane */}
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           {/* 1. Explain Code Form */}
           {activeTab === "explain" && (
             <form onSubmit={handleRunExplain} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-white">Explain Code & Complexity</h3>
+              <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
+                <h3 className="text-sm font-bold text-[#18181B]">
+                  Explain Code & Complexity
+                </h3>
                 <select
                   value={explainForm.language}
                   onChange={(e) => setExplainForm({ ...explainForm, language: e.target.value })}
-                  className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-white"
+                  className="rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-2.5 py-1 text-xs text-[#18181B]"
                 >
                   <option value="javascript">JavaScript</option>
                   <option value="python">Python</option>
@@ -264,18 +265,18 @@ function AITools() {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5 font-medium">
-                  Paste your implementation or function:
+                <label className="block text-xs text-[#575653] mb-1 font-medium">
+                  Function or implementation snippet:
                 </label>
                 <textarea
                   rows={10}
                   value={explainForm.code}
                   onChange={(e) => setExplainForm({ ...explainForm, code: e.target.value })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3.5 font-mono text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 font-mono text-xs text-[#18181B] focus:border-[#657858] focus:bg-white focus:outline-none leading-relaxed"
                 />
               </div>
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" variant="primary" loading={loading} className="w-full">
                 Analyze Code with AI
               </Button>
             </form>
@@ -284,12 +285,14 @@ function AITools() {
           {/* 2. Optimize Code Form */}
           {activeTab === "optimize" && (
             <form onSubmit={handleRunOptimize} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-white">Optimize Code Complexity</h3>
+              <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
+                <h3 className="text-sm font-bold text-[#18181B]">
+                  Optimize Algorithmic Complexity
+                </h3>
                 <select
                   value={optimizeForm.language}
                   onChange={(e) => setOptimizeForm({ ...optimizeForm, language: e.target.value })}
-                  className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-xs text-white"
+                  className="rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-2.5 py-1 text-xs text-[#18181B]"
                 >
                   <option value="javascript">JavaScript</option>
                   <option value="python">Python</option>
@@ -299,18 +302,18 @@ function AITools() {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5 font-medium">
-                  Code snippet to optimize:
+                <label className="block text-xs text-[#575653] mb-1 font-medium">
+                  Code snippet to evaluate for optimizations:
                 </label>
                 <textarea
                   rows={10}
                   value={optimizeForm.code}
                   onChange={(e) => setOptimizeForm({ ...optimizeForm, code: e.target.value })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3.5 font-mono text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 font-mono text-xs text-[#18181B] focus:border-[#657858] focus:bg-white focus:outline-none leading-relaxed"
                 />
               </div>
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" variant="primary" loading={loading} className="w-full">
                 Find Optimizations
               </Button>
             </form>
@@ -319,42 +322,46 @@ function AITools() {
           {/* 3. Generate Notes Form */}
           {activeTab === "notes" && (
             <form onSubmit={handleRunNotes} className="space-y-4">
-              <h3 className="text-base font-semibold text-white">Generate Structured Notes</h3>
+              <div className="border-b border-[#E6E3DB] pb-3">
+                <h3 className="text-sm font-bold text-[#18181B]">
+                  Generate Structured Notes
+                </h3>
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1 font-medium">Problem Title</label>
+                  <label className="block text-xs text-[#575653] mb-1 font-medium">Problem Title</label>
                   <input
                     type="text"
                     value={notesForm.title}
                     onChange={(e) => setNotesForm({ ...notesForm, title: e.target.value })}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-3 py-1.5 text-xs text-[#18181B]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1 font-medium">Topic</label>
+                  <label className="block text-xs text-[#575653] mb-1 font-medium">Topic</label>
                   <input
                     type="text"
                     value={notesForm.topic}
                     onChange={(e) => setNotesForm({ ...notesForm, topic: e.target.value })}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-md border border-[#E6E3DB] bg-[#FAF9F5] px-3 py-1.5 text-xs text-[#18181B]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5 font-medium">
+                <label className="block text-xs text-[#575653] mb-1 font-medium">
                   Your Solution or Approach:
                 </label>
                 <textarea
                   rows={8}
                   value={notesForm.code}
                   onChange={(e) => setNotesForm({ ...notesForm, code: e.target.value })}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3.5 font-mono text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 font-mono text-xs text-[#18181B] focus:border-[#657858] focus:bg-white focus:outline-none"
                 />
               </div>
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" variant="primary" loading={loading} className="w-full">
                 Generate Structured Notes
               </Button>
             </form>
@@ -363,10 +370,14 @@ function AITools() {
           {/* 4. Resume Analyzer Form */}
           {activeTab === "resume" && (
             <form onSubmit={handleRunResume} className="space-y-4">
-              <h3 className="text-base font-semibold text-white">ATS Resume Reviewer</h3>
-              <p className="text-xs text-slate-400">
-                Paste your resume text or experience bullet points to evaluate ATS keywords and SDE profile strength.
-              </p>
+              <div className="border-b border-[#E6E3DB] pb-3">
+                <h3 className="text-sm font-bold text-[#18181B]">
+                  ATS Resume Reviewer
+                </h3>
+                <p className="text-xs text-[#575653] mt-0.5">
+                  Paste your resume text to evaluate ATS keywords and technical profile strength.
+                </p>
+              </div>
 
               <div>
                 <textarea
@@ -374,11 +385,11 @@ function AITools() {
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   placeholder="Paste resume text..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3.5 font-sans text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 font-sans text-xs text-[#18181B] focus:border-[#657858] focus:bg-white focus:outline-none leading-relaxed"
                 />
               </div>
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" variant="primary" loading={loading} className="w-full">
                 Run ATS Resume Analysis
               </Button>
             </form>
@@ -387,15 +398,19 @@ function AITools() {
           {/* 5. Interview Prep Form */}
           {activeTab === "interview" && (
             <form onSubmit={handleRunInterview} className="space-y-4">
-              <h3 className="text-base font-semibold text-white">Interview Questions Generator</h3>
+              <div className="border-b border-[#E6E3DB] pb-3">
+                <h3 className="text-sm font-bold text-[#18181B]">
+                  Interview Questions Generator
+                </h3>
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1 font-medium">Domain</label>
+                  <label className="block text-xs text-[#575653] mb-1 font-medium">Domain</label>
                   <select
                     value={interviewForm.topic}
                     onChange={(e) => setInterviewForm({ ...interviewForm, topic: e.target.value })}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-md border border-[#E6E3DB] bg-white px-3 py-1.5 text-xs text-[#18181B]"
                   >
                     <option value="DSA">Data Structures & Algorithms</option>
                     <option value="Backend">Backend & APIs (Node/Express)</option>
@@ -404,11 +419,11 @@ function AITools() {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1 font-medium">Difficulty Level</label>
+                  <label className="block text-xs text-[#575653] mb-1 font-medium">Seniority Level</label>
                   <select
                     value={interviewForm.level}
                     onChange={(e) => setInterviewForm({ ...interviewForm, level: e.target.value })}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-md border border-[#E6E3DB] bg-white px-3 py-1.5 text-xs text-[#18181B]"
                   >
                     <option value="Junior">Junior SDE</option>
                     <option value="Intermediate">Intermediate SDE (1-3 yrs)</option>
@@ -417,7 +432,7 @@ function AITools() {
                 </div>
               </div>
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" variant="primary" loading={loading} className="w-full">
                 Generate Questions
               </Button>
             </form>
@@ -425,22 +440,22 @@ function AITools() {
         </div>
 
         {/* Right Output Pane */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4 min-h-[400px]">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-base font-semibold text-white flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-blue-400" />
-              <span>AI Output & Insights</span>
+        <div className="rounded-xl border border-[#E6E3DB] bg-white p-5 sm:p-6 space-y-4 min-h-[400px] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between border-b border-[#E6E3DB] pb-3">
+            <h3 className="text-sm font-bold text-[#18181B] flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-[#657858]" />
+              <span>Studio Output</span>
             </h3>
 
             {result && (
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="xs"
                 onClick={() => handleCopy(JSON.stringify(result, null, 2))}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                <span>{copied ? "Copied" : "Copy"}</span>
-              </button>
+                {copied ? <Check className="h-3 w-3 text-[#426447]" /> : <Copy className="h-3 w-3" />}
+                <span>{copied ? "Copied" : "Copy Output"}</span>
+              </Button>
             )}
           </div>
 
@@ -449,40 +464,40 @@ function AITools() {
               <LoadingSpinner message="DevFlow AI is analyzing your input..." />
             </div>
           ) : !result ? (
-            <div className="py-20 text-center text-xs text-slate-500">
-              Select a tool on the left and submit your input to receive structured AI feedback.
+            <div className="py-24 text-center text-xs text-[#8E8B82]">
+              Select a tool on the left and submit code or text to receive structured feedback.
             </div>
           ) : (
             <div className="space-y-4 text-xs">
-              {/* If string response from external LLM */}
-              {result.explanation && typeof result.explanation === "string" ? (
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 font-mono text-slate-200 whitespace-pre-wrap leading-relaxed">
+              {/* String Response */}
+              {result.explanation && typeof result.explanation === "string" && (
+                <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-4 font-mono text-[#18181B] whitespace-pre-wrap leading-relaxed">
                   {result.explanation}
                 </div>
-              ) : null}
+              )}
 
-              {/* Heuristic Explain Output */}
+              {/* Explain Output */}
               {result.timeComplexity && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-slate-400 block">Time Complexity</span>
-                      <span className="text-sm font-bold text-amber-400 mt-1 block">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3">
+                      <span className="text-[10px] text-[#8E8B82] uppercase font-semibold block">Time Complexity</span>
+                      <span className="text-xs font-bold text-[#865B20] mt-0.5 block font-mono">
                         {result.timeComplexity}
                       </span>
                     </div>
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-slate-400 block">Space Complexity</span>
-                      <span className="text-sm font-bold text-blue-400 mt-1 block">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3">
+                      <span className="text-[10px] text-[#8E8B82] uppercase font-semibold block">Space Complexity</span>
+                      <span className="text-xs font-bold text-[#657858] mt-0.5 block font-mono">
                         {result.spaceComplexity}
                       </span>
                     </div>
                   </div>
 
                   {result.potentialBugs?.length > 0 && (
-                    <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3.5 space-y-1.5 text-rose-300">
+                    <div className="rounded-lg border border-[#E8BFBF] bg-[#FBF0F0] p-3.5 space-y-1.5 text-[#933D3D]">
                       <span className="font-semibold block">Potential Boundary Bugs:</span>
-                      <ul className="list-disc list-inside space-y-1">
+                      <ul className="list-disc list-inside space-y-1 text-[11px]">
                         {result.potentialBugs.map((bug, i) => (
                           <li key={i}>{bug}</li>
                         ))}
@@ -491,9 +506,9 @@ function AITools() {
                   )}
 
                   {result.suggestions?.length > 0 && (
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 space-y-1.5 text-slate-300">
-                      <span className="font-semibold text-white block">Interview Tips:</span>
-                      <ul className="list-disc list-inside space-y-1">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3.5 space-y-1 text-[#575653]">
+                      <span className="font-semibold text-[#18181B] block">Interview Tips:</span>
+                      <ul className="list-disc list-inside space-y-1 text-[11px]">
                         {result.suggestions.map((sug, i) => (
                           <li key={i}>{sug}</li>
                         ))}
@@ -503,28 +518,28 @@ function AITools() {
                 </div>
               )}
 
-              {/* Heuristic Optimize Output */}
+              {/* Optimize Output */}
               {result.optimizedComplexity && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-slate-400 block">Original Complexity</span>
-                      <span className="text-xs font-semibold text-rose-400 mt-1 block">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3">
+                      <span className="text-[10px] text-[#8E8B82] uppercase font-semibold block">Original Complexity</span>
+                      <span className="text-xs font-bold text-[#933D3D] mt-0.5 block font-mono">
                         {result.originalComplexity}
                       </span>
                     </div>
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3">
-                      <span className="text-slate-400 block">Target Complexity</span>
-                      <span className="text-xs font-semibold text-emerald-400 mt-1 block">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3">
+                      <span className="text-[10px] text-[#8E8B82] uppercase font-semibold block">Target Complexity</span>
+                      <span className="text-xs font-bold text-[#426447] mt-0.5 block font-mono">
                         {result.optimizedComplexity}
                       </span>
                     </div>
                   </div>
 
                   {result.improvements && (
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 space-y-1 text-slate-300">
-                      <span className="font-semibold text-white block">Algorithmic Improvements:</span>
-                      <ul className="list-disc list-inside space-y-1">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3.5 space-y-1 text-[#575653]">
+                      <span className="font-semibold text-[#18181B] block">Improvements:</span>
+                      <ul className="list-disc list-inside space-y-1 text-[11px]">
                         {result.improvements.map((imp, i) => (
                           <li key={i}>{imp}</li>
                         ))}
@@ -534,17 +549,17 @@ function AITools() {
                 </div>
               )}
 
-              {/* Heuristic Notes Output */}
+              {/* Notes Output */}
               {result.keyIdea && (
                 <div className="space-y-3">
-                  <div className="rounded-xl border border-blue-500/20 bg-blue-950/20 p-3 text-blue-300">
+                  <div className="rounded-lg border border-[#C6D2BF] bg-[#EEF2EB] p-3 text-[#4E5D44]">
                     <span className="font-semibold block">Key Intuition:</span>
-                    <p className="mt-1">{result.keyIdea}</p>
+                    <p className="mt-1 text-xs leading-relaxed">{result.keyIdea}</p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 space-y-1 text-slate-300">
-                    <span className="font-semibold text-white block">Algorithmic Steps:</span>
-                    <ol className="list-decimal list-inside space-y-1">
+                  <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3.5 space-y-1 text-[#575653]">
+                    <span className="font-semibold text-[#18181B] block">Algorithmic Steps:</span>
+                    <ol className="list-decimal list-inside space-y-1 text-[11px]">
                       {result.algorithmSteps.map((st, i) => (
                         <li key={i}>{st}</li>
                       ))}
@@ -553,27 +568,25 @@ function AITools() {
                 </div>
               )}
 
-              {/* Resume Analysis Output */}
+              {/* ATS Resume Score */}
               {result.atsScore !== undefined && (
                 <div className="space-y-3">
-                  <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 flex items-center justify-between">
+                  <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-4 flex items-center justify-between">
                     <div>
-                      <span className="text-slate-400 block">ATS Match Score</span>
-                      <span className="text-2xl font-bold text-emerald-400 mt-1 block">
+                      <span className="text-xs text-[#8E8B82] block">ATS Match Score</span>
+                      <span className="text-2xl font-extrabold text-[#426447] mt-0.5 block">
                         {result.atsScore}/100
                       </span>
                     </div>
-                    <div className="text-right">
-                      <span className="text-xs text-slate-400">Target: 80+ for SDE</span>
-                    </div>
+                    <span className="text-xs text-[#8E8B82]">Target: 80+ for Tier-1 SDE</span>
                   </div>
 
                   {result.missingKeywords?.length > 0 && (
-                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-amber-300 space-y-1">
+                    <div className="rounded-lg border border-[#EAD5AC] bg-[#FAF4E8] p-3 text-[#865B20] space-y-1">
                       <span className="font-semibold block">Suggested Missing Keywords:</span>
-                      <div className="flex flex-wrap gap-1.5 mt-1">
+                      <div className="flex flex-wrap gap-1 mt-1">
                         {result.missingKeywords.map((kw, i) => (
-                          <span key={i} className="rounded bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold">
+                          <span key={i} className="rounded bg-white px-2 py-0.5 text-[10px] font-semibold border border-[#EAD5AC]">
                             +{kw}
                           </span>
                         ))}
@@ -582,9 +595,9 @@ function AITools() {
                   )}
 
                   {result.improvements?.length > 0 && (
-                    <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 space-y-1 text-slate-300">
-                      <span className="font-semibold text-white block">Recommendations:</span>
-                      <ul className="list-disc list-inside space-y-1">
+                    <div className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3.5 space-y-1 text-[#575653]">
+                      <span className="font-semibold text-[#18181B] block">Recommendations:</span>
+                      <ul className="list-disc list-inside space-y-1 text-[11px]">
                         {result.improvements.map((imp, i) => (
                           <li key={i}>{imp}</li>
                         ))}
@@ -594,20 +607,18 @@ function AITools() {
                 </div>
               )}
 
-              {/* Interview Questions Output */}
+              {/* Interview Questions */}
               {result.questions && Array.isArray(result.questions) && (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {result.questions.map((q, idx) => (
-                    <div key={idx} className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-semibold uppercase text-blue-400">
-                          {q.category} • {q.difficulty}
-                        </span>
-                        <span className="text-slate-500">#{idx + 1}</span>
+                    <div key={idx} className="rounded-lg border border-[#E6E3DB] bg-[#FAF9F5] p-3 space-y-1">
+                      <div className="flex items-center justify-between text-[10px] font-semibold uppercase text-[#657858]">
+                        <span>{q.category} · {q.difficulty}</span>
+                        <span className="text-[#8E8B82]">#{idx + 1}</span>
                       </div>
-                      <p className="font-semibold text-white text-xs">{q.question}</p>
-                      <p className="text-[11px] text-slate-400 border-t border-slate-800/80 pt-1.5">
-                        <span className="text-emerald-400 font-medium">Evaluation Focus: </span>
+                      <p className="font-bold text-[#18181B] text-xs">{q.question}</p>
+                      <p className="text-[11px] text-[#575653] pt-1 border-t border-[#E6E3DB]">
+                        <span className="font-semibold text-[#18181B]">Evaluation Focus: </span>
                         {q.keyPoints}
                       </p>
                     </div>

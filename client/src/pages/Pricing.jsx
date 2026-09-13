@@ -1,122 +1,141 @@
+import { Link } from "react-router-dom";
+import { CheckCircle2, ArrowRight } from "lucide-react";
+import Button from "../components/ui/Button";
+
 function Pricing() {
   const plans = [
     {
-      name: "Free",
+      name: "Community",
       price: "₹0",
-      description: "For developers starting their journey.",
+      cadence: "free forever",
+      description: "Everything individual engineers need to track and revise DSA problems.",
       features: [
-        "DSA progress tracking",
-        "Basic learning dashboard",
-        "Technical notes",
+        "Unlimited DSA problem tracking",
+        "Automated 5-stage spaced repetition",
+        "Technical notes & cheatsheets",
+        "Activity contribution heatmap",
+        "Live contest calendar",
+        "AI code explanation suite",
       ],
+      buttonText: "Start Free",
+      buttonVariant: "secondary",
+      popular: false,
     },
     {
-      name: "Pro",
+      name: "Pro Engineer",
       price: "₹199",
-      description: "For developers serious about consistent growth.",
+      cadence: "per month",
+      description: "For engineers preparing intensively for upcoming FAANG / tier-1 interviews.",
       features: [
-        "Everything in Free",
-        "Advanced analytics",
-        "Unlimited notes",
-        "Detailed progress insights",
+        "Everything in Community",
+        "Unlimited AI code optimizations",
+        "Deep ATS resume keyword analysis",
+        "Custom interview question generator",
+        "Advanced retention metrics & export",
+        "Priority feature updates",
       ],
+      buttonText: "Join Pro",
+      buttonVariant: "primary",
       popular: true,
     },
     {
-      name: "Team",
+      name: "Study Cohort",
       price: "₹499",
-      description: "For small teams learning and building together.",
+      cadence: "per team / month",
+      description: "For small peer study groups, bootcamps, and competitive programming circles.",
       features: [
         "Everything in Pro",
-        "Team workspace",
-        "Shared progress",
-        "Team analytics",
+        "Shared cohort problem lists",
+        "Peer consistency leaderboard",
+        "Shared technical documentation",
+        "Team mock interview bank",
+        "Admin workspace controls",
       ],
+      buttonText: "Start Cohort",
+      buttonVariant: "secondary",
+      popular: false,
     },
   ];
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-20 text-white">
-      <section className="mx-auto max-w-7xl">
-
+    <div className="bg-[#F7F6F2] px-6 py-16 md:py-24">
+      <div className="mx-auto max-w-5xl space-y-16">
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-            Pricing
-          </p>
-
-          <h1 className="mt-3 text-4xl font-bold sm:text-5xl">
-            Simple plans for
-            <span className="text-blue-500"> every developer.</span>
+        <div className="mx-auto max-w-2xl text-center space-y-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#657858]">
+            Simple & Transparent
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#18181B] leading-tight">
+            Fair pricing for every developer.
           </h1>
-
-          <p className="mt-5 text-lg leading-8 text-slate-400">
-            Start free and upgrade when you need more powerful tools for
-            tracking your development journey.
+          <p className="text-sm sm:text-base text-[#575653]">
+            Start free with full tracking and spaced repetition. Upgrade only when you want accelerated AI preparation tools.
           </p>
         </div>
 
-        {/* Plans */}
-        <div className="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-3">
+        {/* Pricing Cards */}
+        <div className="grid gap-6 md:grid-cols-3">
           {plans.map((plan) => (
-            <article
+            <div
               key={plan.name}
-              className={`relative rounded-xl border p-6 ${
+              className={`relative rounded-xl border p-6 flex flex-col justify-between transition-all ${
                 plan.popular
-                  ? "border-blue-500 bg-slate-900"
-                  : "border-slate-800 bg-slate-900/60"
+                  ? "border-[#657858] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-[#657858]/30"
+                  : "border-[#E6E3DB] bg-[#FAF9F5]"
               }`}
             >
               {plan.popular && (
-                <span className="absolute right-5 top-5 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold">
-                  Popular
+                <span className="absolute -top-2.5 right-6 rounded-full bg-[#657858] px-2.5 py-0.5 text-[10px] font-semibold text-white uppercase tracking-wider">
+                  Recommended
                 </span>
               )}
 
-              <h2 className="text-2xl font-semibold">
-                {plan.name}
-              </h2>
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-base font-bold text-[#18181B] tracking-tight">
+                    {plan.name}
+                  </h2>
+                  <p className="mt-1 text-xs text-[#575653] min-h-[32px]">
+                    {plan.description}
+                  </p>
+                </div>
 
-              <p className="mt-3 text-sm text-slate-400">
-                {plan.description}
-              </p>
+                <div className="pt-2 border-t border-[#E6E3DB]">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold text-[#18181B]">
+                      {plan.price}
+                    </span>
+                    <span className="text-xs text-[#8E8B82]">/ {plan.cadence}</span>
+                  </div>
+                </div>
 
-              <div className="mt-6">
-                <span className="text-4xl font-bold">
-                  {plan.price}
-                </span>
-
-                {plan.name !== "Free" && (
-                  <span className="text-slate-500"> / month</span>
-                )}
+                <ul className="space-y-2 pt-2 text-xs text-[#575653]">
+                  {plan.features.map((feat) => (
+                    <li key={feat} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#657858] shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <ul className="mt-6 space-y-3">
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="text-sm text-slate-300"
+              <div className="pt-6">
+                <Link to="/signup" className="block w-full">
+                  <Button
+                    variant={plan.buttonVariant}
+                    size="md"
+                    className="w-full shadow-xs"
                   >
-                    ✓ {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className={`mt-8 w-full rounded-lg px-5 py-3 font-medium transition-colors ${
-                  plan.popular
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "border border-slate-700 text-white hover:bg-slate-800"
-                }`}
-              >
-                Get Started
-              </button>
-            </article>
+                    <span>{plan.buttonText}</span>
+                    <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
-
-      </section>
-    </main>
+      </div>
+    </div>
   );
 }
 

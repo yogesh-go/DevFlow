@@ -5,13 +5,13 @@ function TaskFilters({
   onPriorityChange,
 }) {
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col sm:flex-row gap-2.5">
       <select
         value={status}
         onChange={(event) =>
           onStatusChange(event.target.value)
         }
-        className="px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-3 py-1.5 text-xs rounded-md bg-white border border-[#E6E3DB] text-[#18181B] focus:outline-none focus:border-[#657858]"
       >
         <option value="all">All Status</option>
         <option value="todo">Todo</option>
@@ -24,7 +24,7 @@ function TaskFilters({
         onChange={(event) =>
           onPriorityChange(event.target.value)
         }
-        className="px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-3 py-1.5 text-xs rounded-md bg-white border border-[#E6E3DB] text-[#18181B] focus:outline-none focus:border-[#657858]"
       >
         <option value="all">All Priority</option>
         <option value="low">Low</option>
