@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
-  Flame,
   CheckCircle2,
   Repeat,
   Sparkles,
   Plus,
   ArrowRight,
   Code2,
-  Calendar,
   AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -18,9 +16,9 @@ import { getRevisions, completeRevision } from "../services/revisionService";
 import { getProblems } from "../services/problemService";
 import { DifficultyBadge, PlatformBadge } from "../components/problems/ProblemBadge";
 import Button from "../components/ui/Button";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
 import ActivityHeatmap from "../components/ui/ActivityHeatmap";
 import EmptyState from "../components/ui/EmptyState";
+import { getTimeBasedGreeting } from "../utils/greeting";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -82,13 +80,6 @@ function Dashboard() {
     window.dispatchEvent(new CustomEvent("devflow:open-problem-modal"));
   };
 
-  // Compute greeting according to current hour
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
 
   if (loading) {
     return (
@@ -165,17 +156,18 @@ function Dashboard() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#18181B]">
-            {getGreeting()}, {developerName}.
+            {getTimeBasedGreeting()}, {developerName}.
           </h1>
 
           <p className="text-sm text-[#575653] pt-0.5">
+            Here's what you need to focus on today.{" "}
             {revisions.length > 0
-              ? `Your consistency is improving. You have ${revisions.length} ${
+              ? `You have ${revisions.length} ${
                   revisions.length === 1 ? "revision" : "revisions"
-                } scheduled today.`
+                } scheduled.`
               : overview.totalProblems === 0
-              ? "Welcome to DevFlow. Log your first problem to activate automated spaced repetition."
-              : "Your consistency is improving. All scheduled revisions for today are complete."}
+              ? "Log your first problem to activate automated spaced repetition."
+              : "All scheduled revisions for today are complete."}
           </p>
         </div>
 

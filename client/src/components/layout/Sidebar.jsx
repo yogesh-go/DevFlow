@@ -330,8 +330,12 @@ function Sidebar({
                 isDesktopCollapsed ? "lg:hidden" : "flex-1"
               }`}
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#18181B] text-xs font-bold text-white shadow-xs">
-                {user?.name ? user.name.charAt(0).toUpperCase() : "D"}
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#18181B] text-xs font-bold text-white shadow-xs overflow-hidden">
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user?.name || "Avatar"} className="h-full w-full object-cover" />
+                ) : (
+                  user?.name ? user.name.charAt(0).toUpperCase() : "D"
+                )}
               </div>
               <div className="min-w-0">
                 <p className="truncate text-xs font-semibold text-[#18181B]">
@@ -348,9 +352,13 @@ function Sidebar({
                 to="/profile"
                 onClick={handleNavClick}
                 title={`Profile: ${user?.name || "Developer"}`}
-                className="hidden lg:flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#18181B] text-xs font-bold text-white shadow-xs hover:opacity-90 transition-opacity"
+                className="hidden lg:flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#18181B] text-xs font-bold text-white shadow-xs hover:opacity-90 transition-opacity overflow-hidden"
               >
-                {user?.name ? user.name.charAt(0).toUpperCase() : "D"}
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user?.name || "Avatar"} className="h-full w-full object-cover" />
+                ) : (
+                  user?.name ? user.name.charAt(0).toUpperCase() : "D"
+                )}
               </Link>
             )}
 

@@ -88,8 +88,12 @@ function TopNavbar({ onMenuClick, isDesktopCollapsed, onToggleDesktopSidebar }) 
           to="/profile"
           className="flex items-center gap-2 rounded-md border border-[#E6E3DB] bg-white p-1 pr-2.5 hover:border-[#D5D1C6] transition-colors"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-[#18181B] text-[10px] font-bold text-white">
-            {user?.name ? user.name.charAt(0).toUpperCase() : "D"}
+          <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-[#18181B] text-[10px] font-bold text-white overflow-hidden">
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user?.name || "Avatar"} className="h-full w-full object-cover" />
+            ) : (
+              user?.name ? user.name.charAt(0).toUpperCase() : "D"
+            )}
           </div>
           <span className="hidden text-xs font-medium text-[#18181B] md:inline-block">
             {user?.name || "Developer"}

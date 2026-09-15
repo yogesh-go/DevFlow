@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 const User = require("../models/User");
 const { sendVerificationEmail } = require("../services/emailService");
 
@@ -9,12 +10,26 @@ const generateOTP = () => {
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         message: "Name, email and password are required",
+      });
+    }
+
+    if (confirmPassword !== undefined && password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
       });
     }
 
@@ -236,6 +251,13 @@ const login = async (req, res) => {
       });
     }
 
+    if (!user.password) {
+      return res.status(400).json({
+        success: false,
+        message: "This account was registered with Google. Please use 'Continue with Google' to sign in.",
+      });
+    }
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
@@ -280,9 +302,124 @@ const login = async (req, res) => {
   }
 };
 
+const googleAuth = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: "Google authentication token (credential) is required",
+      });
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.error(
+        "Google authentication failed: GOOGLE_CLIENT_ID is not configured in server environment."
+      );
+      return res.status(500).json({
+        success: false,
+        message:
+          "Google authentication is not configured on the server. Please set GOOGLE_CLIENT_ID in server .env.",
+      });
+    }
+
+    const client = new OAuth2Client(clientId);
+    let payload;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch (verifyError) {
+      console.error("Google ID token verification failed:", verifyError.message);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired Google authentication credential",
+      });
+    }
+
+    if (!payload || !payload.email) {
+      return res.status(400).json({
+        success: false,
+        message: "Google identity does not include an email address",
+      });
+    }
+
+    const googleId = payload.sub;
+    const normalizedEmail = payload.email.toLowerCase().trim();
+    const displayName = payload.name?.trim() || "Developer";
+    const picture = payload.picture || "";
+
+    // Find existing user by googleId or email
+    let user = await User.findOne({
+      $or: [{ googleId }, { email: normalizedEmail }],
+    });
+
+    if (user) {
+      // Seamlessly link Google identity to existing email account
+      let shouldSave = false;
+
+      if (!user.googleId) {
+        user.googleId = googleId;
+        shouldSave = true;
+      }
+      if (!user.isVerified) {
+        user.isVerified = true;
+        shouldSave = true;
+      }
+      if (!user.avatar && picture) {
+        user.avatar = picture;
+        shouldSave = true;
+      }
+
+      if (shouldSave) {
+        await user.save();
+      }
+    } else {
+      // Create new verified Google user account
+      user = await User.create({
+        name: displayName,
+        email: normalizedEmail,
+        googleId,
+        authProvider: "google",
+        avatar: picture,
+        isVerified: true,
+      });
+    }
+
+    // Generate standard DevFlow JWT session
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Google authentication successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        isVerified: true,
+      },
+    });
+  } catch (error) {
+    console.error("Google authentication error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error during Google authentication",
+    });
+  }
+};
+
 module.exports = {
   signup,
   verifyEmail,
   resendVerification,
   login,
+  googleAuth,
 };

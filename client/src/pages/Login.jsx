@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { CheckCircle2, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import GoogleAuthButton from "../components/ui/GoogleAuthButton";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
@@ -15,6 +16,7 @@ function Login() {
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -48,6 +50,28 @@ function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credential) => {
+    setError("");
+    setLoading(true);
+    try {
+      const data = await api("/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ credential }),
+      });
+
+      login(data.user, data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Google authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = (errorMessage) => {
+    setError(errorMessage);
   };
 
   return (
@@ -113,6 +137,25 @@ function Login() {
             </div>
           )}
 
+          {/* Google Authentication */}
+          <div className="space-y-4">
+            <GoogleAuthButton
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              disabled={loading}
+              text="signin_with"
+            />
+
+            <div className="relative flex items-center justify-center my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#E6E3DB]" />
+              </div>
+              <span className="relative bg-[#F7F6F2] px-3 text-[11px] uppercase tracking-wider text-[#8E8B82] font-medium">
+                or continue with email
+              </span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Email Address"
@@ -126,12 +169,28 @@ function Login() {
 
             <Input
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="••••••••"
               required
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="text-[#8E8B82] hover:text-[#18181B] focus:outline-none focus:text-[#18181B] transition-colors p-1"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                  tabIndex={0}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              }
             />
 
             <div className="pt-2">

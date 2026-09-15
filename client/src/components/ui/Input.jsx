@@ -7,6 +7,7 @@ function Input({
   className = "",
   required = false,
   icon: Icon,
+  rightElement,
   ...props
 }) {
   return (
@@ -29,10 +30,16 @@ function Input({
             "focus:border-[#657858] focus:ring-2 focus:ring-[#657858]/15",
             error && "border-[#E8BFBF] focus:border-[#933D3D] focus:ring-[#933D3D]/15",
             Icon && "pl-10",
+            rightElement && "pr-10",
             className
           )}
           {...props}
         />
+        {rightElement && (
+          <div className="absolute right-3 flex items-center">
+            {rightElement}
+          </div>
+        )}
       </div>
 
       {helperText && !error && (
